@@ -1,7 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Redis } from 'ioredis';
+import { REDIS_URI } from '../configs/configs';
 
-let redis = new Redis();
+let redis = new Redis(REDIS_URI);
 
 export async function listKeys(req: Request, res: Response, next: NextFunction) {
   try {

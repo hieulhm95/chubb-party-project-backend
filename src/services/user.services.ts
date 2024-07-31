@@ -6,9 +6,9 @@ import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadshee
 import { format } from 'date-fns';
 import { Redis } from 'ioredis';
 import { convertBase64 } from '../utils/utils';
-import { SCOPES, SHEET_ID } from '../configs/configs';
+import { REDIS_URI, SCOPES, SHEET_ID } from '../configs/configs';
 
-let redis = new Redis();
+let redis = new Redis(REDIS_URI);
 
 const config = process.env;
 

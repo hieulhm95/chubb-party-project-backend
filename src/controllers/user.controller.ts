@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import * as userServices from '../services/user.services';
 import { Redis } from 'ioredis';
+import { REDIS_URI } from '../configs/configs';
 
-let redis = new Redis();
+let redis = new Redis(REDIS_URI);
 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
   try {

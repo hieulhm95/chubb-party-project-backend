@@ -5,4 +5,6 @@ const SCOPES = [
 
 const SHEET_ID = '1dXnrTVDqFpW20jWqzexOOWb_tvaxcQHEFMk6yI4PRQQ';
 
-export { SCOPES, SHEET_ID };
+const REDIS_URI = `rediss://red-cqku953qf0us73bpvsvg:x6VzZcJWG7pdKUJEZ6ZyPGdGKESaqK2d@singapore-redis.render.com:6379`;
+
+export { SCOPES, SHEET_ID, REDIS_URI };

@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { convertBase64 } from '../utils/utils';
 import { Redis } from 'ioredis';
+import { REDIS_URI } from '../configs/configs';
 
-let redis = new Redis();
+let redis = new Redis(REDIS_URI);
+
+redis.connect(() => console.log('Redis connected'));
 
 export async function cacheMiddleware(req: Request, res: Response, next: NextFunction) {
   const { email } = req.body;

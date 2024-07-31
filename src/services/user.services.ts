@@ -1,12 +1,12 @@
 import { RegisterRequest, RegisterResponse } from '../types/user.types';
 import { mockUser } from '../utils/constant';
 import { JWT } from 'google-auth-library';
-// import creds from '../configs/gg-credential.json';
-import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { format } from 'date-fns';
 import { Redis } from 'ioredis';
 import { convertBase64 } from '../utils/utils';
 import { REDIS_URI, SCOPES, SHEET_ID } from '../configs/configs';
+import creds from '../configs/gg-cred.json';
 
 let redis = new Redis(REDIS_URI);
 
@@ -14,23 +14,22 @@ export async function get(page = 1) {
   return mockUser;
 }
 
-export async function connectGoogleApis() {
+async function connectGoogleApis() {
   const jwt = new JWT({
-    email: process.env.GOOGLE_CLIENT_EMAIL,
-    key: process.env.GOOGLE_PRIVATE_KEY,
+    email: creds.client_email,
+    key: creds.private_key,
     scopes: SCOPES,
   });
-  console.log('====debug=====', process.env.GOOGLE_CLIENT_EMAIL);
   const doc = new GoogleSpreadsheet(SHEET_ID, jwt);
   await doc.loadInfo();
   return doc;
 }
 
-export async function getSheet(doc: GoogleSpreadsheet) {
+const getSheet = async (doc: any) => {
   return doc.sheetsByIndex[0];
-}
+};
 
-async function getAllEmail(doc: GoogleSpreadsheet) {
+async function getAllEmail(doc: any) {
   const sheet = await getSheet(doc);
   await sheet.loadCells('C1:C'); // Load all Email in Email Column
 
@@ -44,17 +43,17 @@ async function getAllEmail(doc: GoogleSpreadsheet) {
   return columnEmailValues;
 }
 
-export async function checkUserExist(doc: GoogleSpreadsheet, email: string) {
+export async function checkUserExist(email: string) {
+  const doc = await connectGoogleApis();
   const emails = await getAllEmail(doc);
   const foundUser = emails.includes(email);
   return foundUser;
 }
 
-export async function create(
-  sheet: GoogleSpreadsheetWorksheet,
-  params: RegisterRequest
-): Promise<RegisterResponse | null> {
+export async function create(params: RegisterRequest): Promise<RegisterResponse | null> {
   const { firstName, lastName, email, company } = params;
+  const doc = await connectGoogleApis();
+  const sheet = await getSheet(doc);
   await sheet.addRow({
     FirstName: firstName,
     LastName: lastName,

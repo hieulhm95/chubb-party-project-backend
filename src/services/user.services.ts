@@ -10,18 +10,17 @@ import { REDIS_URI, SCOPES, SHEET_ID } from '../configs/configs';
 
 let redis = new Redis(REDIS_URI);
 
-const config = process.env;
-
 export async function get(page = 1) {
   return mockUser;
 }
 
 export async function connectGoogleApis() {
   const jwt = new JWT({
-    email: config.CLIENT_EMAIL,
-    key: config.PRIVATE_KEY,
+    email: process.env.GOOGLE_CLIENT_EMAIL,
+    key: process.env.GOOGLE_PRIVATE_KEY,
     scopes: SCOPES,
   });
+  console.log('====debug=====', process.env.GOOGLE_CLIENT_EMAIL);
   const doc = new GoogleSpreadsheet(SHEET_ID, jwt);
   await doc.loadInfo();
   return doc;

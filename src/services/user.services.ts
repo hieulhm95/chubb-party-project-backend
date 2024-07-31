@@ -18,8 +18,8 @@ export async function get(page = 1) {
 
 export async function connectGoogleApis() {
   const jwt = new JWT({
-    email: config.client_email,
-    key: config.private_key,
+    email: config.CLIENT_EMAIL,
+    key: config.PRIVATE_KEY,
     scopes: SCOPES,
   });
   const doc = new GoogleSpreadsheet(SHEET_ID, jwt);

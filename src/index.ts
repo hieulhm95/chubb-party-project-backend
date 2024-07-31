@@ -1,6 +1,5 @@
 import * as dotenv from 'dotenv';
-dotenv.config({ path: __dirname + '/.env' });
-
+dotenv.config();
 import express, { Express, json, Request, Response, urlencoded } from 'express';
 import { userRoute } from './routes/user.routes';
 import redisRouter from './routes/redis.routes';

@@ -1,0 +1,8 @@
+# Ignore credential files
+creds.json
+gg-credential.json
+# Other files and directories to ignore
+node_modules/
+dist/
+.env
+.vscode

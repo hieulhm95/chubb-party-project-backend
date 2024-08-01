@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Redis } from 'ioredis';
 import { REDIS_URI } from '../configs/configs';
 

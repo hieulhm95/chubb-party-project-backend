@@ -1,24 +1,35 @@
 import { RegisterRequest, RegisterResponse } from '../types/user.types';
 import { mockUser } from '../utils/constant';
 import { JWT } from 'google-auth-library';
-import { GoogleSpreadsheet } from 'google-spreadsheet';
+import {
+  GoogleSpreadsheet,
+  GoogleSpreadsheetRow,
+  GoogleSpreadsheetWorksheet,
+} from 'google-spreadsheet';
 import { format } from 'date-fns';
 import { Redis } from 'ioredis';
 import { convertBase64 } from '../utils/utils';
-import { REDIS_URI, SCOPES, SHEET_ID } from '../configs/configs';
-import creds from '../configs/gg-cred.json';
+import { GOOGLE_AUTH, REDIS_URI, SHEET_ID } from '../configs/configs';
 
 let redis = new Redis(REDIS_URI);
 
-export async function get(page = 1) {
-  return mockUser;
+export async function get(email: string) {
+  const doc = await connectGoogleApis();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = await sheet.getRows();
+  const userRow = rows.find(row => row.get('Email') === email);
+  if (!userRow) {
+    return null;
+  }
+  const allCells = getAllCellsInRow(sheet, userRow);
+  return allCells;
 }
 
 async function connectGoogleApis() {
   const jwt = new JWT({
-    email: creds.client_email,
-    key: creds.private_key,
-    scopes: SCOPES,
+    email: GOOGLE_AUTH.client_email,
+    key: GOOGLE_AUTH.private_key,
+    scopes: GOOGLE_AUTH.SCOPES,
   });
   const doc = new GoogleSpreadsheet(SHEET_ID, jwt);
   await doc.loadInfo();
@@ -78,4 +89,44 @@ export async function create(params: RegisterRequest): Promise<RegisterResponse 
     email,
     company,
   };
+}
+
+// Get all cells in the row
+function getAllCellsInRow(sheet: GoogleSpreadsheetWorksheet, userRow: GoogleSpreadsheetRow) {
+  const allCells: { [key: string]: any } = {};
+  sheet.headerValues.forEach(header => {
+    allCells[header] = userRow.get(header);
+  });
+  return allCells;
+}
+
+export async function update(email: string, updateData: { isRewarded: boolean }) {
+  const { isRewarded } = updateData;
+  const doc = await connectGoogleApis();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = await sheet.getRows();
+  const userRow = rows.find(row => row.get('Email') === email);
+  if (!userRow) {
+    return null;
+  }
+  const payload = {
+    IsRewarded: isRewarded,
+    RewardedAt: format(new Date(), 'dd/MM/yyyy HH:mm'),
+  };
+  userRow.assign(payload);
+  await userRow.save();
+  const allCells = getAllCellsInRow(sheet, userRow);
+  const base64Email = convertBase64(email);
+  const result = {
+    ...allCells,
+    ...payload,
+  };
+  await redis.set(
+    base64Email,
+    JSON.stringify({
+      ...allCells,
+      ...payload,
+    })
+  );
+  return result;
 }

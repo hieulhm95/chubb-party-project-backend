@@ -15,8 +15,7 @@ export async function get(email: string) {
   if (!userRow) {
     return null;
   }
-  const allCells = getAllCellsInRow(sheet, userRow);
-  return allCells;
+  return getAllCellsInRow(sheet, userRow);
 }
 
 // async function getAllEmail(doc: any) {
@@ -53,37 +52,36 @@ export async function create(params: RegisterRequest): Promise<RegisterResponse 
   const { firstName, lastName, email, company } = params;
   const doc = await connectGoogleApis();
   const sheet = await getSheet(doc, 0);
+  const currentTime = format(new Date(), 'dd/MM/yyyy HH:mm');
   await sheet.addRow({
     FirstName: firstName,
     LastName: lastName,
     Email: email,
     Company: company,
-    CreatedAt: format(new Date(), 'dd/MM/yyyy HH:mm'),
-    UpdatedAt: format(new Date(), 'dd/MM/yyyy HH:mm'),
+    CreatedAt: currentTime,
+    UpdatedAt: currentTime,
+    IsRewarded: false,
   });
   const base64Email = convertBase64(email);
-  await redis.set(
-    base64Email,
-    JSON.stringify({
-      firstName,
-      lastName,
-      email,
-      company,
-    })
-  );
-  return {
+  const result = {
     firstName,
     lastName,
     email,
     company,
+    isRewarded: false,
+    createdAt: currentTime,
+    updatedAt: currentTime,
   };
+  await redis.set(base64Email, JSON.stringify(result));
+  return result;
 }
 
 // Get all cells in the row
 function getAllCellsInRow(sheet: GoogleSpreadsheetWorksheet, userRow: GoogleSpreadsheetRow) {
   const allCells: { [key: string]: any } = {};
   sheet.headerValues.forEach(header => {
-    allCells[header] = userRow.get(header);
+    const camelCaseHeader = header.charAt(0).toLowerCase() + header.slice(1);
+    allCells[camelCaseHeader] = userRow.get(header);
   });
   return allCells;
 }
@@ -97,17 +95,26 @@ export async function update(updateData: UpdateUserRequest) {
   if (!userRow) {
     return null;
   }
-  const payload = {
+  const currentTime = format(new Date(), 'dd/MM/yyyy HH:mm');
+  userRow.assign({
     IsRewarded: isRewarded,
-    RewardedAt: format(new Date(), 'dd/MM/yyyy HH:mm'),
+    RewardedAt: currentTime,
     FullName: fullName,
     Company: company,
     Phone: phone,
-    UpdatedAt: format(new Date(), 'dd/MM/yyyy HH:mm'),
+    UpdatedAt: currentTime,
     Title: title,
-  };
-  userRow.assign(payload);
+  });
   await userRow.save();
+  const payload = {
+    isRewarded,
+    fullName,
+    company,
+    phone,
+    title,
+    rewardedAt: currentTime,
+    updatedAt: currentTime,
+  };
   const allCells = getAllCellsInRow(sheet, userRow);
   const base64Email = convertBase64(normalizeEmail);
   const result = {

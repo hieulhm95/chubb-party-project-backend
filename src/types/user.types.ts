@@ -10,6 +10,9 @@ export interface RegisterResponse {
   lastName: string;
   email: string;
   company: string;
+  isRewarded: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UpdateUserRequest {

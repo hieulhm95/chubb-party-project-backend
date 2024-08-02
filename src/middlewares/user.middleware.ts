@@ -3,9 +3,12 @@ import { convertBase64 } from '../utils/utils';
 import { Redis } from 'ioredis';
 import { REDIS_URI } from '../configs/configs';
 
-let redis = new Redis(REDIS_URI);
+let redis = new Redis(REDIS_URI, {
+  connectTimeout: 10000, // Increase connection timeout to 10 seconds
+});
 
-redis.connect(() => console.log('Redis connected'));
+redis.on('connect', () => console.log('[Redis] connected successfully'));
+redis.on('error', err => console.error('[Redis] connection error:', err));
 
 export async function cachePostMiddleware(req: Request, res: Response, next: NextFunction) {
   const { email } = req.body;

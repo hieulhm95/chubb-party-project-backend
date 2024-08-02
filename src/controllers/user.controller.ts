@@ -34,9 +34,12 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 
 export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const { isRewarded, email } = req.body;
-    const normalizeEmail = email.toLowerCase().trim();
-    res.json(await userServices.update(normalizeEmail, { isRewarded }));
+    const updateData = req.body;
+    const { email } = updateData;
+    if (!email) {
+      return res.status(400).send({ error: 'Yêu cầu không hợp lệ' });
+    }
+    res.json(await userServices.update(updateData));
   } catch (err) {
     console.error(`Error while update user`, (err as any).message);
     next(err);

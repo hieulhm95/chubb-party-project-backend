@@ -19,19 +19,19 @@ export async function get(email: string) {
   return allCells;
 }
 
-async function getAllEmail(doc: any) {
-  const sheet = await getSheet(doc, 0);
-  await sheet.loadCells('A1:A'); // Load all Email in Email Column
+// async function getAllEmail(doc: any) {
+//   const sheet = await getSheet(doc, 0);
+//   await sheet.loadCells('A1:A'); // Load all Email in Email Column
 
-  const columnEmailValues = [];
-  for (let rowIndex = 1; rowIndex < sheet.rowCount; rowIndex++) {
-    const cell = sheet.getCell(rowIndex, 0); // Column Email is index 0
-    if (cell.value !== null && cell.value !== '') {
-      columnEmailValues.push(cell.value);
-    }
-  }
-  return columnEmailValues;
-}
+//   const columnEmailValues = [];
+//   for (let rowIndex = 1; rowIndex < sheet.rowCount; rowIndex++) {
+//     const cell = sheet.getCell(rowIndex, 0); // Column Email is index 0
+//     if (cell.value !== null && cell.value !== '') {
+//       columnEmailValues.push(cell.value);
+//     }
+//   }
+//   return columnEmailValues;
+// }
 
 async function getUserByEmail(email: string, sheet: GoogleSpreadsheetWorksheet) {
   const rows = await sheet.getRows();
@@ -42,12 +42,12 @@ async function getUserByEmail(email: string, sheet: GoogleSpreadsheetWorksheet) 
   return userRow;
 }
 
-export async function checkUserExist(email: string) {
-  const doc = await connectGoogleApis();
-  const emails = await getAllEmail(doc);
-  const foundUser = emails.includes(email);
-  return foundUser;
-}
+// export async function checkUserExist(email: string) {
+//   const doc = await connectGoogleApis();
+//   const emails = await getAllEmail(doc);
+//   const foundUser = emails.includes(email);
+//   return foundUser;
+// }
 
 export async function create(params: RegisterRequest): Promise<RegisterResponse | null> {
   const { firstName, lastName, email, company } = params;

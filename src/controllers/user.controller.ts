@@ -21,13 +21,13 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   try {
     const { firstName, lastName, email, company } = req.body;
     const normalizeEmail = email.toLowerCase().trim();
-    const isUserExitst = await userServices.checkUserExist(normalizeEmail);
+    const isUserExitst = await userServices.get(normalizeEmail);
     if (isUserExitst) {
-      return res.status(400).send({ error: 'Tài khoản này đã được đăng ký' });
+      return res.json(await userServices.get(normalizeEmail));
     }
     res.json(await userServices.create({ firstName, lastName, email: normalizeEmail, company }));
   } catch (err) {
-    console.error(`Error while create user`, (err as any).message);
+    console.error(`Error while register user`, (err as any).message);
     next(err);
   }
 }

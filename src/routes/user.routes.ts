@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import * as userController from '../controllers/user.controller';
-import { cachePostMiddleware, cacheGetMiddleware } from '../middlewares/user.middleware';
+import {
+  cachePostMiddleware,
+  cacheGetMiddleware,
+  cacheUserPlayedMiddleware,
+} from '../middlewares/user.middleware';
 
 export const userRoute = Router();
 
@@ -11,4 +15,4 @@ userRoute.get('/', cacheGetMiddleware, userController.getUsers);
 userRoute.post('/register', cachePostMiddleware, userController.register);
 
 /* UPDATE user */
-userRoute.put('/', userController.updateUser);
+userRoute.put('/', cacheUserPlayedMiddleware, userController.updateUser);

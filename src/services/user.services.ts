@@ -100,6 +100,7 @@ export async function update(updateData: UpdateUserRequest) {
   }
   const currentTime = format(new Date(), 'dd/MM/yyyy HH:mm');
   const isRewardedAndGift = isRewarded && isPlayed && giftId;
+  const base64Email = convertBase64(normalizeEmail);
   userRow.assign({
     IsRewarded: isRewarded,
     RewardedAt: isRewardedAndGift ? currentTime : '',
@@ -113,7 +114,7 @@ export async function update(updateData: UpdateUserRequest) {
   });
   await userRow.save();
   if (isRewardedAndGift) {
-    await giftServices.updateGiftsStorage(Number(giftId));
+    await giftServices.updateGiftsStorage(Number(giftId), base64Email);
   }
   const payload = {
     isRewarded,
@@ -121,12 +122,12 @@ export async function update(updateData: UpdateUserRequest) {
     company,
     phone,
     title,
-    rewardedAt: currentTime,
+    rewardedAt: isRewardedAndGift ? currentTime : '',
     updatedAt: currentTime,
     isPlayed,
+    giftId: isRewardedAndGift ? giftId : '',
   };
   const allCells = getAllCellsInRow(sheet, userRow);
-  const base64Email = convertBase64(normalizeEmail);
   const result = {
     ...allCells,
     ...payload,

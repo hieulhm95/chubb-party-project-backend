@@ -23,7 +23,20 @@ export async function getSelectedGift() {
   return randomGift.id;
 }
 
-export async function updateGiftsStorage(giftId: Number) {
+export async function checkGiftInStock(giftId: Number) {
+  const gifts = await getGiftsStorage();
+  const selectedGift = gifts.find((gift: { id: Number }) => gift.id === giftId);
+  if (!selectedGift) {
+    return false;
+  }
+  return selectedGift.quantity > 0;
+}
+
+export async function updateGiftsStorage(giftId: Number, email: string) {
+  const cachedUser = await redis.get(email);
+  if (cachedUser && JSON.parse(cachedUser)?.isRewarded && JSON.parse(cachedUser)?.giftId) {
+    return;
+  }
   const gifts = await getGiftsStorage();
   const giftIndex = gifts.findIndex((gift: { id: Number; quantity: Number }) => gift.id === giftId);
   if (giftIndex === -1) {

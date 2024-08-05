@@ -1,7 +1,6 @@
 import { Redis } from 'ioredis';
 import { REDIS_URI } from '../configs/configs';
-import fs from 'fs';
-import path from 'path';
+import { DEFAULT_GIFT } from '../utils/constant';
 
 let redis = new Redis(REDIS_URI);
 
@@ -10,16 +9,8 @@ async function getGiftsStorage() {
   if (giftCacheData) {
     return JSON.parse(giftCacheData);
   }
-  return new Promise((resolve, reject) => {
-    fs.readFile(path.join(__dirname, '../data/gift.json'), 'utf8', (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      const parsedData = JSON.parse(data);
-      redis.set('gifts', JSON.stringify(parsedData));
-      resolve(parsedData);
-    });
-  });
+  await redis.set('gifts', JSON.stringify(DEFAULT_GIFT));
+  return DEFAULT_GIFT;
 }
 
 export async function getSelectedGift() {

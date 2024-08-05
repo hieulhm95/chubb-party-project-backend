@@ -5,6 +5,7 @@ import { Redis } from 'ioredis';
 import { convertBase64 } from '../utils/utils';
 import { REDIS_URI } from '../configs/configs';
 import { connectGoogleApis, getSheet } from '../utils/googleApis';
+import * as giftServices from './gift.services';
 
 let redis = new Redis(REDIS_URI);
 
@@ -89,7 +90,7 @@ function getAllCellsInRow(sheet: GoogleSpreadsheetWorksheet, userRow: GoogleSpre
 }
 
 export async function update(updateData: UpdateUserRequest) {
-  const { isRewarded, fullName, company, phone, title, email, isPlayed } = updateData;
+  const { isRewarded, fullName, company, phone, title, email, isPlayed, giftId } = updateData;
   const normalizeEmail = email.toLowerCase().trim();
   const doc = await connectGoogleApis();
   const sheet = doc.sheetsByIndex[0];
@@ -98,17 +99,22 @@ export async function update(updateData: UpdateUserRequest) {
     return null;
   }
   const currentTime = format(new Date(), 'dd/MM/yyyy HH:mm');
+  const isRewardedAndGift = isRewarded && isPlayed && giftId;
   userRow.assign({
     IsRewarded: isRewarded,
-    RewardedAt: currentTime,
+    RewardedAt: isRewardedAndGift ? currentTime : '',
     FullName: fullName,
     Company: company,
     Phone: phone,
     UpdatedAt: currentTime,
     Title: title,
     IsPlayed: isPlayed,
+    GiftId: isRewardedAndGift ? giftId : '',
   });
   await userRow.save();
+  if (isRewardedAndGift) {
+    await giftServices.updateGiftsStorage(Number(giftId));
+  }
   const payload = {
     isRewarded,
     fullName,

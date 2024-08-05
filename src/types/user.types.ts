@@ -24,6 +24,7 @@ export interface UpdateUserRequest {
   phone: string;
   title: string;
   isPlayed: boolean;
+  giftId?: number;
 }
 
 export interface User {

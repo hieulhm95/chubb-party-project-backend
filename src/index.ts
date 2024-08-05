@@ -5,6 +5,7 @@ import pinoHttp from 'pino-http';
 import { logger } from './utils/logger';
 import { userRoute } from './routes/user.routes';
 import redisRouter from './routes/redis.routes';
+import giftRouter from './routes/gift.routes';
 const cors = require('cors');
 
 const app: Express = express();
@@ -26,6 +27,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/user', userRoute);
 app.use('/redis', redisRouter);
+app.use('/gift', giftRouter);
 
 app.listen(port, () => {
   logger.info(`[Server]: Server is running at http://localhost:${port}`);

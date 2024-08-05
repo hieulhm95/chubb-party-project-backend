@@ -3,6 +3,7 @@ export interface RegisterRequest {
   lastName: string;
   email: string;
   company: string;
+  device?: 'mobile' | 'desktop' | 'tablet';
 }
 
 export interface RegisterResponse {

@@ -50,7 +50,7 @@ async function getUserByEmail(email: string, sheet: GoogleSpreadsheetWorksheet) 
 // }
 
 export async function create(params: RegisterRequest): Promise<RegisterResponse | null> {
-  const { firstName, lastName, email, company } = params;
+  const { firstName, lastName, email, company, device } = params;
   const doc = await connectGoogleApis();
   const sheet = await getSheet(doc, 0);
   const currentTime = format(new Date(), 'dd/MM/yyyy HH:mm');
@@ -63,6 +63,7 @@ export async function create(params: RegisterRequest): Promise<RegisterResponse 
     UpdatedAt: currentTime,
     IsRewarded: false,
     IsPlayed: false,
+    Device: device ?? '',
   });
   const base64Email = convertBase64(email);
   const result = {
@@ -74,6 +75,7 @@ export async function create(params: RegisterRequest): Promise<RegisterResponse 
     createdAt: currentTime,
     updatedAt: currentTime,
     isPlayed: false,
+    device: device ?? '',
   };
   await redis.set(base64Email, JSON.stringify(result));
   return result;

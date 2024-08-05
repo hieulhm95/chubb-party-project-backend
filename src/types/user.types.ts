@@ -13,6 +13,7 @@ export interface RegisterResponse {
   isRewarded: boolean;
   createdAt: string;
   updatedAt: string;
+  isPlayed: boolean;
 }
 
 export interface UpdateUserRequest {
@@ -22,6 +23,7 @@ export interface UpdateUserRequest {
   company: string;
   phone: string;
   title: string;
+  isPlayed: boolean;
 }
 
 export interface User {
@@ -36,4 +38,5 @@ export interface User {
   phone?: string;
   isRewarded?: boolean;
   title?: string;
+  isPlayed?: boolean;
 }

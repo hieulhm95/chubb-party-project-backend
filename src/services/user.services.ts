@@ -61,6 +61,7 @@ export async function create(params: RegisterRequest): Promise<RegisterResponse 
     CreatedAt: currentTime,
     UpdatedAt: currentTime,
     IsRewarded: false,
+    IsPlayed: false,
   });
   const base64Email = convertBase64(email);
   const result = {
@@ -71,6 +72,7 @@ export async function create(params: RegisterRequest): Promise<RegisterResponse 
     isRewarded: false,
     createdAt: currentTime,
     updatedAt: currentTime,
+    isPlayed: false,
   };
   await redis.set(base64Email, JSON.stringify(result));
   return result;
@@ -87,7 +89,7 @@ function getAllCellsInRow(sheet: GoogleSpreadsheetWorksheet, userRow: GoogleSpre
 }
 
 export async function update(updateData: UpdateUserRequest) {
-  const { isRewarded, fullName, company, phone, title, email } = updateData;
+  const { isRewarded, fullName, company, phone, title, email, isPlayed } = updateData;
   const normalizeEmail = email.toLowerCase().trim();
   const doc = await connectGoogleApis();
   const sheet = doc.sheetsByIndex[0];
@@ -104,6 +106,7 @@ export async function update(updateData: UpdateUserRequest) {
     Phone: phone,
     UpdatedAt: currentTime,
     Title: title,
+    IsPlayed: isPlayed,
   });
   await userRow.save();
   const payload = {
@@ -114,6 +117,7 @@ export async function update(updateData: UpdateUserRequest) {
     title,
     rewardedAt: currentTime,
     updatedAt: currentTime,
+    isPlayed,
   };
   const allCells = getAllCellsInRow(sheet, userRow);
   const base64Email = convertBase64(normalizeEmail);

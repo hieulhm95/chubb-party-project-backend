@@ -19,13 +19,21 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
 
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
-    const { firstName, lastName, email, company } = req.body;
+    const { firstName, lastName, email, company, device } = req.body;
     const normalizeEmail = email.toLowerCase().trim();
-    const isUserExitst = await userServices.get(normalizeEmail);
-    if (isUserExitst) {
-      return res.json(await userServices.get(normalizeEmail));
+    const foundUser = await userServices.get(normalizeEmail);
+    if (foundUser) {
+      return res.json(foundUser);
     }
-    res.json(await userServices.create({ firstName, lastName, email: normalizeEmail, company }));
+    res.json(
+      await userServices.create({
+        firstName,
+        lastName,
+        email: normalizeEmail,
+        company,
+        device,
+      })
+    );
   } catch (err) {
     console.error(`Error while register user`, (err as any).message);
     next(err);

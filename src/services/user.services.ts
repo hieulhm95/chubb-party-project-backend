@@ -92,7 +92,8 @@ function getAllCellsInRow(sheet: GoogleSpreadsheetWorksheet, userRow: GoogleSpre
 }
 
 export async function update(updateData: UpdateUserRequest) {
-  const { isRewarded, fullName, company, phone, title, email, isPlayed, giftId } = updateData;
+  const { isRewarded, fullName, company, phone, title, email, isPlayed, giftId, device } =
+    updateData;
   const normalizeEmail = email.toLowerCase().trim();
   const doc = await connectGoogleApis();
   const sheet = doc.sheetsByIndex[0];
@@ -113,6 +114,7 @@ export async function update(updateData: UpdateUserRequest) {
     Title: title,
     IsPlayed: isPlayed,
     GiftId: isRewardedAndGift ? giftId : '',
+    Device: device ?? '',
   });
   await userRow.save();
   if (isRewardedAndGift) {
@@ -128,6 +130,7 @@ export async function update(updateData: UpdateUserRequest) {
     updatedAt: currentTime,
     isPlayed,
     giftId: isRewardedAndGift ? giftId : '',
+    device: device ?? '',
   };
   const allCells = getAllCellsInRow(sheet, userRow);
   const result = {

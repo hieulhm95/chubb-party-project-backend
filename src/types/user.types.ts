@@ -25,6 +25,7 @@ export interface UpdateUserRequest {
   phone: string;
   title: string;
   isPlayed: boolean;
+  address: string;
   giftId?: number;
   device?: 'mobile' | 'desktop' | 'tablet';
 }

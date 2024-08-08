@@ -7,6 +7,7 @@ import {
 } from 'google-spreadsheet';
 import { format } from 'date-fns';
 import { GOOGLE_AUTH } from '../configs/configs';
+import { formatValue } from './utils';
 
 export async function connectGoogleApis() {
   const jwt = new JWT({
@@ -52,7 +53,7 @@ export async function getAllCellsInRow(
   const allCells: { [key: string]: any } = {};
   sheet.headerValues.forEach(header => {
     const camelCaseHeader = header.charAt(0).toLowerCase() + header.slice(1);
-    allCells[camelCaseHeader] = userRow.get(header);
+    allCells[camelCaseHeader] = formatValue(header, userRow.get(header));
   });
   return allCells;
 }

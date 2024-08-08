@@ -26,3 +26,17 @@ export async function getFromRedisCache(key: string) {
 export function normalizeString(str: string): string {
   return str.toLowerCase().trim();
 }
+
+export function formatValue(field: string, value: any) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  if (field === 'IsPlayed' || field === 'IsRewarded') {
+    if (value === 'TRUE') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return value;
+}

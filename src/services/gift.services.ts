@@ -1,15 +1,12 @@
-import { Redis } from 'ioredis';
-import { REDIS_URI } from '../configs/configs';
 import { DEFAULT_GIFT } from '../utils/constant';
-
-let redis = new Redis(REDIS_URI);
+import { getFromRedisCache, saveToRedisCache } from '../utils/utils';
 
 async function getGiftsStorage() {
-  let giftCacheData = await redis.get('gifts');
+  let giftCacheData = await getFromRedisCache('gifts');
   if (giftCacheData) {
-    return JSON.parse(giftCacheData);
+    return giftCacheData;
   }
-  await redis.set('gifts', JSON.stringify(DEFAULT_GIFT));
+  await saveToRedisCache('gifts', DEFAULT_GIFT);
   return DEFAULT_GIFT;
 }
 
@@ -33,8 +30,8 @@ export async function checkGiftInStock(giftId: Number) {
 }
 
 export async function updateGiftsStorage(giftId: Number, email: string) {
-  const cachedUser = await redis.get(email);
-  if (cachedUser && JSON.parse(cachedUser)?.isRewarded && JSON.parse(cachedUser)?.giftId) {
+  const cachedUser = await getFromRedisCache(email);
+  if (cachedUser?.isRewarded && cachedUser?.giftId) {
     return;
   }
   const gifts = await getGiftsStorage();
@@ -46,5 +43,5 @@ export async function updateGiftsStorage(giftId: Number, email: string) {
     return;
   }
   gifts[giftIndex].quantity -= 1;
-  await redis.set('gifts', JSON.stringify(gifts));
+  await saveToRedisCache('gifts', gifts);
 }

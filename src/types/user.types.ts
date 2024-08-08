@@ -19,13 +19,9 @@ export interface RegisterResponse {
 
 export interface UpdateUserRequest {
   isRewarded: boolean;
-  fullName: string;
   email: string;
   company: string;
-  phone: string;
-  title: string;
   isPlayed: boolean;
-  address: string;
   giftId?: number;
   device?: 'mobile' | 'desktop' | 'tablet';
 }
@@ -43,4 +39,13 @@ export interface User {
   isRewarded?: boolean;
   title?: string;
   isPlayed?: boolean;
+}
+
+export interface UpdateRewardRequest {
+  fullName: string;
+  company: string;
+  phone: string;
+  title: string;
+  email: string;
+  address: string;
 }

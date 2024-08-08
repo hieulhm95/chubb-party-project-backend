@@ -4,6 +4,7 @@ import {
   cachePostMiddleware,
   cacheGetMiddleware,
   cacheUserPlayedMiddleware,
+  cacheUserRewardedMiddleware,
 } from '../middlewares/user.middleware';
 
 export const userRoute = Router();
@@ -16,3 +17,6 @@ userRoute.post('/register', cachePostMiddleware, userController.register);
 
 /* UPDATE user */
 userRoute.put('/', cacheUserPlayedMiddleware, userController.updateUser);
+
+/* UPDATE reward info */
+userRoute.put('/reward', cacheUserRewardedMiddleware, userController.updateReward);

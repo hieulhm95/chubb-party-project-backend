@@ -43,13 +43,19 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
     const updateData = req.body;
-    const { email } = updateData;
-    if (!email) {
-      return res.status(400).send({ error: 'Yêu cầu không hợp lệ' });
-    }
     res.json(await userServices.update(updateData));
   } catch (err) {
     console.error(`Error while update user`, (err as any).message);
+    next(err);
+  }
+}
+
+export async function updateReward(req: Request, res: Response, next: NextFunction) {
+  try {
+    const updateData = req.body;
+    res.json(await userServices.updateReward(updateData));
+  } catch (err) {
+    console.error(`Error while update reward`, (err as any).message);
     next(err);
   }
 }

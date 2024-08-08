@@ -6,7 +6,7 @@ import {
   GoogleSpreadsheetWorksheet,
 } from 'google-spreadsheet';
 import { format } from 'date-fns';
-import { GOOGLE_AUTH } from '../configs/creds';
+import { GOOGLE_AUTH } from '../configs/configs';
 
 export async function connectGoogleApis() {
   const jwt = new JWT({

@@ -78,7 +78,7 @@ export async function updateReward(updateRewardData: UpdateRewardRequest) {
     return userData;
   }
   await updateSheet(sheet, normalizeEmail, {
-    FullName: true,
+    FullName: fullName,
     Company: company,
     Phone: phone,
     Title: title,

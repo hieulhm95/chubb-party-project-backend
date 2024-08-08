@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as userServices from '../services/user.services';
 import { decodeBase64 } from '../utils/utils';
+import { logger } from '../utils/logger';
 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
   try {
@@ -10,9 +11,10 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
     }
     const decodeEmail = decodeBase64(email as string);
     const normalizeEmail = decodeEmail.toLowerCase().trim();
-    res.json(await userServices.get(normalizeEmail));
+    const result = await userServices.get(normalizeEmail);
+    res.json(result);
   } catch (err) {
-    console.error(`Error while getting user`, (err as any).message);
+    logger.error(`Error while getting user: ${(err as any).message}`);
     next(err);
   }
 }
@@ -25,17 +27,16 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     if (foundUser) {
       return res.json(foundUser);
     }
-    res.json(
-      await userServices.create({
-        firstName,
-        lastName,
-        email: normalizeEmail,
-        company,
-        device,
-      })
-    );
+    const result = await userServices.create({
+      firstName,
+      lastName,
+      email: normalizeEmail,
+      company,
+      device,
+    });
+    res.json(result);
   } catch (err) {
-    console.error(`Error while register user`, (err as any).message);
+    logger.error(`Error while register user: ${(err as any).message}`);
     next(err);
   }
 }
@@ -43,9 +44,10 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
     const updateData = req.body;
-    res.json(await userServices.update(updateData));
+    const result = await userServices.update(updateData);
+    res.json(result);
   } catch (err) {
-    console.error(`Error while update user`, (err as any).message);
+    logger.error(`Error while update user: ${(err as any).message}`);
     next(err);
   }
 }
@@ -53,9 +55,10 @@ export async function updateUser(req: Request, res: Response, next: NextFunction
 export async function updateReward(req: Request, res: Response, next: NextFunction) {
   try {
     const updateData = req.body;
-    res.json(await userServices.updateReward(updateData));
+    const result = await userServices.updateReward(updateData);
+    res.json(result);
   } catch (err) {
-    console.error(`Error while update reward`, (err as any).message);
+    logger.error(`Error while update reward: ${(err as any).message}`);
     next(err);
   }
 }

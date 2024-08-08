@@ -6,12 +6,12 @@ import { logger } from '../utils/logger';
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
   try {
     const { email } = req.query;
-    if (!email) {
-      res.status(404).send();
-    }
     const decodeEmail = decodeBase64(email as string);
     const normalizeEmail = decodeEmail.toLowerCase().trim();
     const result = await userServices.get(normalizeEmail);
+    if (!result) {
+      return res.status(404).send('User not found');
+    }
     res.json(result);
   } catch (err) {
     logger.error(`Error while getting user: ${(err as any).message}`);

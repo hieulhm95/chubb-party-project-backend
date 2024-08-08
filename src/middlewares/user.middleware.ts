@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { convertBase64, getFromRedisCache, normalizeString } from '../utils/utils';
 import { Redis } from 'ioredis';
 import { REDIS_URI } from '../configs/configs';
-import pino from 'pino';
 import { logger } from '../utils/logger';
 
 let redis = new Redis(REDIS_URI, {

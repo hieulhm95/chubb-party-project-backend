@@ -27,3 +27,11 @@ export const DEFAULT_GIFT = [
     quantity: 40,
   },
 ];
+
+export const WIN_RATE = 50;
+
+export const REDIS_KEY = {
+  COUNT_USERS_REGISTERED: 'countUsersRegistered',
+  USER_DATA: 'userData',
+  GIFTS: 'gifts',
+};

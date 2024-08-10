@@ -1,12 +1,12 @@
-import { DEFAULT_GIFT } from '../utils/constant';
+import { DEFAULT_GIFT, REDIS_KEY, WIN_RATE } from '../utils/constant';
 import { getFromRedisCache, saveToRedisCache } from '../utils/utils';
 
 async function getGiftsStorage() {
-  let giftCacheData = await getFromRedisCache('gifts');
+  let giftCacheData = await getFromRedisCache(REDIS_KEY.GIFTS);
   if (giftCacheData) {
     return giftCacheData;
   }
-  await saveToRedisCache('gifts', DEFAULT_GIFT);
+  await saveToRedisCache(REDIS_KEY.GIFTS, DEFAULT_GIFT);
   return DEFAULT_GIFT;
 }
 
@@ -29,6 +29,21 @@ export async function checkGiftInStock(giftId: Number) {
   return selectedGift.quantity > 0;
 }
 
+export async function checkWhoIsTheLuckyOne() {
+  const countUsersRegistered = await getFromRedisCache(REDIS_KEY.COUNT_USERS_REGISTERED);
+  if (!countUsersRegistered) {
+    await saveToRedisCache(REDIS_KEY.COUNT_USERS_REGISTERED, 0);
+    return false;
+  }
+  const count = countUsersRegistered;
+  if (+count === WIN_RATE) {
+    await saveToRedisCache(REDIS_KEY.COUNT_USERS_REGISTERED, 0);
+    return true;
+  }
+  await saveToRedisCache(REDIS_KEY.COUNT_USERS_REGISTERED, +count + 1);
+  return false;
+}
+
 export async function updateGiftsStorage(giftId: Number, email: string) {
   const cachedUser = await getFromRedisCache(email);
   if (cachedUser?.isRewarded && cachedUser?.giftId) {
@@ -43,5 +58,5 @@ export async function updateGiftsStorage(giftId: Number, email: string) {
     return;
   }
   gifts[giftIndex].quantity -= 1;
-  await saveToRedisCache('gifts', gifts);
+  await saveToRedisCache(REDIS_KEY.GIFTS, gifts);
 }

@@ -36,7 +36,7 @@ export async function checkWhoIsTheLuckyOne() {
     return false;
   }
   const count = countUsersRegistered;
-  if (+count === WIN_RATE) {
+  if (+count >= WIN_RATE) {
     await saveToRedisCache(REDIS_KEY.COUNT_USERS_REGISTERED, 0);
     return true;
   }

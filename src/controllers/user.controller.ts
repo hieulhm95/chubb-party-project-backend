@@ -72,12 +72,11 @@ export async function updateReward(req: Request, res: Response, next: NextFuncti
 export async function createQuestionForm(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, question, firstName, lastName, company } = req.body;
-    const normalizeEmail = email.toLowerCase().trim();
     const result = await userServices.createQuestionForm(
-      normalizeEmail,
-      question,
+      email,
       firstName,
       lastName,
+      question,
       company
     );
     if (!result) {

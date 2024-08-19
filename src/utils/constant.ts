@@ -28,7 +28,7 @@ export const DEFAULT_GIFT = [
   },
 ];
 
-export const WIN_RATE = 20;
+export const WIN_RATE = 10;
 
 export const REDIS_KEY = {
   COUNT_USERS_REGISTERED: 'countUsersRegistered',

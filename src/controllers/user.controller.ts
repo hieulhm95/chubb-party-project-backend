@@ -74,9 +74,9 @@ export async function createQuestionForm(req: Request, res: Response, next: Next
     const { email, question, firstName, lastName, company } = req.body;
     const result = await userServices.createQuestionForm(
       email,
+      question,
       firstName,
       lastName,
-      question,
       company
     );
     if (!result) {

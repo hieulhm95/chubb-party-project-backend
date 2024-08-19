@@ -68,3 +68,24 @@ export async function updateReward(req: Request, res: Response, next: NextFuncti
     next(err);
   }
 }
+
+export async function createQuestionForm(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, question, firstName, lastName, company } = req.body;
+    const normalizeEmail = email.toLowerCase().trim();
+    const result = await userServices.createQuestionForm(
+      normalizeEmail,
+      question,
+      firstName,
+      lastName,
+      company
+    );
+    if (!result) {
+      return res.status(400).send('Failed to create question');
+    }
+    res.json(result);
+  } catch (err) {
+    logger.error(`Error while create question form: ${(err as any).message}`);
+    next(err);
+  }
+}

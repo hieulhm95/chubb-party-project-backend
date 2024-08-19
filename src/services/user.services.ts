@@ -132,3 +132,34 @@ export async function update(updateData: UpdateUserRequest) {
   await saveToRedisCache(base64Email, result);
   return result;
 }
+
+export async function createQuestionForm(
+  email: string,
+  question: string,
+  firstName: string,
+  lastName: string,
+  company: string
+) {
+  const normalizeEmail = email.toLowerCase().trim();
+  const sheet = await getSheet(2);
+  const currentTime = format(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }),
+    'dd/MM/yyyy HH:mm'
+  );
+  await addRow(sheet, {
+    Email: normalizeEmail,
+    FirstName: firstName,
+    LastName: lastName,
+    Question: question,
+    Company: company,
+    CreatedAt: currentTime,
+  });
+  return {
+    email: normalizeEmail,
+    firstName,
+    lastName,
+    question,
+    company,
+    createdAt: currentTime,
+  };
+}

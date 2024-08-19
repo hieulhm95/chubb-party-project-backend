@@ -20,3 +20,6 @@ userRoute.put('/', cacheUserPlayedMiddleware, userController.updateUser);
 
 /* UPDATE reward info */
 userRoute.put('/reward', cacheUserRewardedMiddleware, userController.updateReward);
+
+/* POST question form */
+userRoute.post('/question', userController.createQuestionForm);

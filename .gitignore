@@ -1,4 +1,5 @@
 # Ignore credential files
+credentials
 creds.json
 gg-credential.json
 # Other files and directories to ignore

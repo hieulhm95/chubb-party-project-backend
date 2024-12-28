@@ -40,31 +40,3 @@ export function formatValue(field: string, value: any) {
   }
   return value;
 }
-
-
-export function mappingData<T extends {[key in string]: any}>(data: {[key in string]: any}, mappingRules: {[key in string]: string}) {
-  const result = {} as any;
-
-  const dataKeys = Object.keys(data);
-
-  Object.keys(mappingRules).map(key => {
-    const keyValue = mappingRules[key];
-
-    if(dataKeys.includes(key)) {
-      result[keyValue] = data[key];
-    }
-  })
-
-  return result as T;
-} 
-
-export function mappingDataList<T extends {[key in string]: any}>(dataList: {[key in string]: any}[], mappingRules: {[key in string]: string}) {
-  const length = dataList.length;
-  const result = [] as T[];
-
-  for(let i = 0; i < length; i++) {
-    result.push(mappingData<T>(dataList[i], mappingRules))
-  }
-
-  return result;
-} 

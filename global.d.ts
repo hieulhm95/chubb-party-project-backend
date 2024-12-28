@@ -8,6 +8,6 @@ namespace NodeJS {
         PORT?: number;
         HOST?: string;
         NODE_ENV?: string;
-        LOGGER_LEVEL?: string;
+        LOG_LEVEL?: string;
     }
 }

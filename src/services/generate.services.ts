@@ -41,6 +41,7 @@ export async function getResponses() {
         projection: {
           _id: 1,
           updatedCount: 1,
+          mediaId: 1
         },
       }
     );
@@ -54,6 +55,10 @@ export async function getResponses() {
         const url = new URL(response.filename);
         const id = url.searchParams.get('id');
         if (id) response.fileId = id;
+      }
+      else if(response.message) {
+        await createVoice(response.message, response.mediaId, response.gender)
+        await delay()
       }
       operations.push({
         insertOne: {
@@ -72,7 +77,7 @@ export async function getResponses() {
         if (id) partialResponse.fileId = id;
       }
       else if(response.message) {
-        await createVoice(response.message, response.mediaId, response.gender)
+        await createVoice(response.message, existedResponse.mediaId as string, response.gender)
         await delay()
       }
       operations.push({

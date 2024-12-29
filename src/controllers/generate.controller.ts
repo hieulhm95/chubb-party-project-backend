@@ -75,7 +75,7 @@ export async function getFileWithExtension(req: Request, res: Response){
 
   res.setHeader("Content-Type", "audio/mp3");
 
-  if(result.mimeType == "audio/mp3" || ) {
+  if(result.mimeType == "audio/mp3" || result.mimeType == "audio/mpeg") {
     result.content.pipe(res);
   }
   else {

@@ -66,8 +66,7 @@ export async function getResponses() {
         if (id) response.fileId = id;
       }
       else if(response.message) {
-        await createVoice(response.message, response.mediaId, response.gender)
-        await delay()
+        postOperations.push(createVoice(response.message, response.mediaId as string, response.gender));
       }
       operations.push({
         insertOne: {

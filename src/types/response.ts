@@ -17,6 +17,7 @@ export interface FormResponse {
     gender: string;
     filename: string;
     message: string;
+    messageLink: string;
 
     mediaId: string;
     fileId: string;

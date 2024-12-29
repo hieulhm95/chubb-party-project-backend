@@ -5,6 +5,15 @@ import { mappingDataList } from '../utils/utils';
 import { v4 } from 'uuid';
 import { InsertOneModel, UpdateOneModel, ObjectId, Document } from 'mongodb';
 import MongoDB from '../utils/mongo';
+import { createVoice } from './tts.services';
+
+function delay(time = 3) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, time * 1000);
+  });
+}
 
 export async function getResponses() {
   const rows = await getAllRowsWithCells(0);
@@ -61,6 +70,10 @@ export async function getResponses() {
         const url = new URL(response.filename);
         const id = url.searchParams.get('id');
         if (id) partialResponse.fileId = id;
+      }
+      else if(response.message) {
+        await createVoice(response.message, response.mediaId, response.gender)
+        await delay()
       }
       operations.push({
         updateOne: {

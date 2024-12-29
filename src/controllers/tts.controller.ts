@@ -23,7 +23,8 @@ export async function createVoiceCallback(req: Request, res: Response, next: Nex
       return res.status(400).json({ message: 'Error while get voice callback' });
     }
     console.log('Debug Voice Callback', { success, mediaId, requestid, message });
-    res.json({ success, mediaId, requestid, message });
+    const result = ttsServices.createVoiceCallback(mediaId, message)
+    res.json({ success, requestid, ...result });
   } catch (err) {
     console.error(`Error while create voice callback`, (err as any).message);
     next(err);

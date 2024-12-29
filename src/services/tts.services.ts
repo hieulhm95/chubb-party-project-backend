@@ -1,5 +1,6 @@
 import { FPT_API_KEY } from '../configs/configs';
 import { API_ENDPOINT_URL } from '../utils/constant';
+import MongoDB from '../utils/mongo';
 
 export async function createVoice(message: string, mediaId: string, gender: string) {
   try {
@@ -23,11 +24,27 @@ export async function createVoice(message: string, mediaId: string, gender: stri
   }
 }
 
-export async function createVoiceCallback(mediaId: string) {
+export async function createVoiceCallback(mediaId: string, mediaLink: string) {
+  const db = new MongoDB().getDatabase('localdb');
+  const collection = db.collection('Response');
+
   try {
+    const result = await collection.updateOne({"mediaId": mediaId},{
+      "$set": {
+        "messageLink": mediaLink
+      }
+    });
+    if(result.modifiedCount > 0) {
+      return {
+        success: true,
+        mediaId,
+        mediaLink
+      };
+    }
     return {
-      success: true,
+      success: false,
       mediaId,
+      mediaLink
     };
   } catch (err) {
     console.error('Error while creating voice callback:', err);

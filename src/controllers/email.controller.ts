@@ -15,7 +15,7 @@ export async function sendEmail(req: Request, res: Response, next: NextFunction)
     if (!qrCode) {
       return res.status(500).json({ message: 'Failed to generate QR code' });
     }
-    await emailService.sendEmailWithBase64Image(to, qrCode);
+    await emailService.sendEmailWithBase64Image(to, qrCode, to);
     res.json({ message: 'Email sent successfully' });
   } catch (err) {
     console.error('Error while sending email', (err as any).message);

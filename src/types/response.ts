@@ -23,4 +23,6 @@ export interface FormResponse {
     fileId: string;
 
     updatedCount: number;
+    mediaLink: string;
+    mimeType: string;
 }

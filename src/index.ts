@@ -12,6 +12,7 @@ import generateRouter from './routes/generate.routes';
 import emailRouter from './routes/email.routes';
 import MongoDB from './utils/mongo';
 import { DATABASE_URL } from './configs/configs';
+import { getFileWithExtension } from './controllers/generate.controller';
 const cors = require('cors');
 
 const app: Express = express();
@@ -20,6 +21,8 @@ const hostname = process.env.HOST || '127.0.0.1';
 function bootstrap() {
   new MongoDB(DATABASE_URL);
 }
+
+app.set("etag", false);
 
 // Use Pino HTTP middleware
 app.use(pinoHttp({ logger }));
@@ -42,6 +45,7 @@ app.use('/tts', ttsRouter);
 app.use('/redis', redisRouter);
 app.use('/generate', generateRouter);
 app.use('/email', emailRouter);
+app.get("/:mediaId", getFileWithExtension);
 
 app.listen(port, hostname, () => {
   bootstrap();

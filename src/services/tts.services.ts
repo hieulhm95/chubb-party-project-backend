@@ -1,5 +1,6 @@
 import { FPT_API_KEY } from '../configs/configs';
 import { API_ENDPOINT_URL } from '../utils/constant';
+import mime from "mime-types
 import MongoDB from '../utils/mongo';
 
 export async function createVoice(message: string, mediaId: string, gender: string) {
@@ -29,9 +30,12 @@ export async function createVoiceCallback(mediaId: string, mediaLink: string) {
   const collection = db.collection('Response');
 
   try {
+    const mimeType = mime.lookup(mediaLink)
+    
     const result = await collection.updateOne({"mediaId": mediaId},{
       "$set": {
-        "messageLink": mediaLink
+        "messageLink": mediaLink,
+        "mimeType": mimeType
       }
     });
     if(result.modifiedCount > 0) {

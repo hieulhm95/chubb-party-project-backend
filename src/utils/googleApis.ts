@@ -35,6 +35,22 @@ export async function getFile(fileId: string) {
   }
 }
 
+export async function getFileMimeType(fileId: string) {
+  const jwt = new JWT({
+    email: GOOGLE_AUTH.client_email,
+    key: GOOGLE_AUTH.private_key,
+    scopes: GOOGLE_AUTH.SCOPES,
+  });
+  const drive = google.drive({
+    version: 'v3',
+    auth: jwt
+  });
+
+  const fileMeta = await drive.files.get({fileId: fileId, fields: "mimeType"});
+
+  return fileMeta.data.mimeType;
+}
+
 export async function connectGoogleApis() {
   const jwt = new JWT({
     email: GOOGLE_AUTH.client_email,

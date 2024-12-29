@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as generateServices from '../services/generate.services';
+import mime from "mime-types";
 
 export async function getResponses(req: Request, res: Response, next: NextFunction) {
   try {
@@ -39,4 +40,24 @@ export async function getResponse(req: Request, res: Response){
   }
 
   return res.status(200).json(result);
+}
+
+export async function getFileWithExtension(req: Request, res: Response){
+  let mediaId = req.params.mediaId as string;
+  if(!mediaId) {
+    res.status(404).send("Media not found");
+  }
+
+  const mediaLinkSegment = mediaId.split(".");
+  mediaLinkSegment.splice(1, mediaLinkSegment.length - 1);
+
+  mediaId = mediaLinkSegment.join(".")
+  const result = await generateServices.getFile(mediaId);
+  if(result == null) {
+    return res.status(404).send("Media not found");
+  }
+
+  res.setHeader("Content-Type", result.mimeType as string);
+
+  result.content.pipe(res);
 }

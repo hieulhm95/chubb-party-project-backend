@@ -1,6 +1,6 @@
 import { MAPPING_RULES } from '../configs/configs';
 import { FormResponse } from '../types/response';
-import { getAllRowsWithCells, getFile as getFileService } from '../utils/googleApis';
+import { getAllRowsWithCells, getFileMimeType, getFile as getFileService } from '../utils/googleApis';
 import { mappingDataList } from '../utils/utils';
 import { v4 } from 'uuid';
 import { InsertOneModel, UpdateOneModel, ObjectId, Document } from 'mongodb';
@@ -12,6 +12,7 @@ import { BASE_URL } from '../utils/constant';
 import * as qrCodeServices from "../services/qrcode.services";
 import * as emailServices from "../services/email.services";
 import { logger } from '../utils/logger';
+import mime from "mime-types";
 
 async function stepByStepPromise(promiseList: (Promise<any>)[]) {
   if(promiseList.length == 0) return Promise.resolve();
@@ -84,7 +85,11 @@ export async function getResponses() {
       if (response.filename) {
         const url = new URL(response.filename);
         const id = url.searchParams.get('id');
-        if (id) response.fileId = id;
+        if (id) {
+          response.fileId = id;
+          const mimetype = await getFileMimeType(id);
+          response.mimeType = mimetype as string;
+        }
       }
       else if(response.message) {
         postOperations.push(createVoice(response.message, response.mediaId as string, response.gender));
@@ -104,7 +109,11 @@ export async function getResponses() {
         partialResponse.filename = response.filename;
         const url = new URL(response.filename);
         const id = url.searchParams.get('id');
-        if (id) partialResponse.fileId = id;
+        if (id) {
+          partialResponse.fileId = id;
+          const mimetype = await getFileMimeType(id);
+          partialResponse.mimeType = mimetype as string;
+        }
       }
       else if(response.message) {
         postOperations.push(createVoice(response.message, existedResponse.mediaId as string, response.gender));
@@ -183,6 +192,9 @@ export async function getResponse(mediaId: string) {
   const formResponse = await collection.findOne<FormResponse>({ mediaId: mediaId });
 
   if (formResponse == null) return null;
+
+  // if(formResponse.filename) 
+  formResponse.mediaLink = "https://gateway.chubbannualstaffparty2025.com/" + formResponse.mediaId + "." + mime.extension(formResponse.mimeType);
 
   return formResponse;
 }

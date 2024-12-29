@@ -12,6 +12,7 @@ import {
 import { format } from 'date-fns';
 import { GOOGLE_AUTH } from '../configs/configs';
 import { formatValue } from './utils';
+import { logger } from './logger';
 
 export async function getFile(fileId: string) {
   const jwt = new JWT({
@@ -47,7 +48,7 @@ export async function getFileMimeType(fileId: string) {
   });
 
   const fileMeta = await drive.files.get({fileId: fileId, fields: "mimeType"});
-
+  logger.info(fileMeta.data);
   return fileMeta.data.mimeType;
 }
 

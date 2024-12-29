@@ -68,9 +68,8 @@ export async function getFileWithExtension(req: Request, res: Response){
   }
   else {
     ffmpeg(result.content)
-    .inputFormat(mime.extension(result.mimeType as string) as string)
+    // .inputFormat(mime.extension(result.mimeType as string) as string)
     .toFormat("mp3")
-    .pipe(res)
-    .end(true)
+    .pipe(res, {end: true})
   }
 }

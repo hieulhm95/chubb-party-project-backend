@@ -32,6 +32,18 @@ export async function getFile(req: Request, res: Response){
   result.content.pipe(res);
 }
 
+const MAPPING_FORMAT = {
+  "audio/mpeg": "mp3",
+  "audio/mp4": "m4a",
+  "audio/x-m4a": "m4a",
+  "audio/wav": "wav",
+  "audio/x-wav": "wav",
+  "audio/ogg": "ogg",
+  "audio/x-flac": "flac",
+  "audio/aac": "aac",
+  "audio/webm": "webm"
+}
+
 export async function getResponse(req: Request, res: Response){
   const mediaId = req.params.mediaId as string;
   if(!mediaId) {
@@ -63,13 +75,15 @@ export async function getFileWithExtension(req: Request, res: Response){
 
   res.setHeader("Content-Type", "audio/mp3");
 
-  if(result.mimeType == "audio/mp3") {
+  if(result.mimeType == "audio/mp3" || ) {
     result.content.pipe(res);
   }
   else {
-    ffmpeg(result.content)
-    // .inputFormat(mime.extension(result.mimeType as string) as string)
-    .toFormat("mp3")
+    const stream = ffmpeg(result.content);
+    const inputFormat = (MAPPING_FORMAT as any)[result.mimeType as string] as string;
+    if(inputFormat) stream.inputFormat(inputFormat)
+
+    stream.toFormat("mp3")
     .pipe(res, {end: true})
   }
 }

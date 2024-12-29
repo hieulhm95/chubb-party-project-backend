@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export async function sendEmailWithBase64Image(to: string, qrCodeImage: string) {
+export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, name: string) {
   const transporter = nodemailer.createTransport({
     host: 'smtp.hostinger.com', // Hostinger SMTP server
     port: 465, // Secure SMTP port
@@ -50,7 +50,7 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string) 
 <body>
   <div class="container">
     <div class="content">
-      <p>Xin chào Tấn Phát,</p>
+      <p>Xin chào ${name || to},</p>
       <p>Anh/Chị vừa nhận được một thông điệp chân thành từ một người đồng đội tại Chubb Life Việt Nam. Đây là món quà đặc biệt dành riêng cho Anh/Chị.</p>
       <p>Mã QR code thông điệp của Anh/Chị: <img src="cid:qrcode" alt="QR Code" /></p>
 

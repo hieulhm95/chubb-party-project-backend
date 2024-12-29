@@ -30,14 +30,14 @@ function delay(time = 3) {
   });
 }
 
-async function generateQRThenSendMail(mediaId: string, to: string){
+async function generateQRThenSendMail(mediaId: string, to: string, name: string){
   const landingPageUrl = `${BASE_URL}/${mediaId}`;
   const qrCode = await qrCodeServices.generateQRCode(landingPageUrl);
   if (!qrCode) {
     return false;
   }
   try {
-    await emailServices.sendEmailWithBase64Image(to, qrCode);
+    await emailServices.sendEmailWithBase64Image(to, qrCode, name);
   }
   catch(e) {
     logger.error(e);
@@ -94,7 +94,7 @@ export async function getResponses() {
           document: response,
         },
       });
-      postOperations.push(generateQRThenSendMail(response.mediaId, response.receiverEmail));
+      postOperations.push(generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName));
     } else {
       const partialResponse = {} as Partial<FormResponse>;
       if (existedResponse.updatedCount == 3) {
@@ -120,7 +120,7 @@ export async function getResponses() {
           },
         },
       });
-      postOperations.push(generateQRThenSendMail(existedResponse.mediaId as string, response.receiverEmail as string));
+      postOperations.push(generateQRThenSendMail(existedResponse.mediaId as string, response.receiverEmail, response.receiverName));
     }
   }
 

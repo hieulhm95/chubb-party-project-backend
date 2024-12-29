@@ -1,62 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const generateHtmlContent = (base64Image: string) => `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Email Template</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      text-align: center;
-      padding: 10px 0;
-    }
-    .content {
-      padding: 20px;
-    }
-    .footer {
-      text-align: center;
-      padding: 10px 0;
-      font-size: 12px;
-      color: #888888;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Welcome to Our Service</h1>
-    </div>
-    <div class="content">
-      <p>Dear User,</p>
-      <p>Thank you for joining our service. We are excited to have you on board.</p>
-      <p>Here is your QR code:</p>
-      <img src="${base64Image}" alt="QR Code" />
-      <p>Best regards,<br/>The Team</p>
-    </div>
-    <div class="footer">
-      <p>&copy; 2023 Our Service. All rights reserved.</p>
-    </div>
-  </div>
-</body>
-</html>
-`;
-
-export async function sendEmailWithBase64Image(to: string, subject: string, base64Image: string) {
+export async function sendEmailWithBase64Image(to: string, qrCodeImage: string) {
   const transporter = nodemailer.createTransport({
     host: 'smtp.hostinger.com', // Hostinger SMTP server
     port: 465, // Secure SMTP port
@@ -118,10 +62,8 @@ Thời gian sự kiện: 17:00 – 22:00, ngày 10/01/2025Địa điểm: The Ad
 <p>Trân trọng, <br /> Ban tổ chức Annual Staff Party 2025.</p>
 
 <p>Mọi thắc mắc hoặc đề xuất vui lòng liên hệ:<br/>
-HR – Trần Đức Minh | DucMinh.Tran@chubb.com<br/>
-E&A – Nguyễn Tấn Phát | TanPhat.Nguyen@chubb.com</p>
-
-
+HR – Trần Đức Minh | <a href="mailto:DucMinh.Tran@chubb.com">DucMinh.Tran@chubb.com</a> <br/>
+E&A – Nguyễn Tấn Phát | <a href="mailto:DucMinh.Tran@chubb.com">TanPhat.Nguyen@chubb.com</a></p>
     </div>
     <div class="footer">
       <p>&copy; 2024 CHUBB. All rights reserved.</p>
@@ -139,7 +81,7 @@ E&A – Nguyễn Tấn Phát | TanPhat.Nguyen@chubb.com</p>
     attachments: [
       {
         filename: 'image.png',
-        content: base64Image.split('base64,')[1],
+        content: qrCodeImage.split('base64,')[1],
         encoding: 'base64',
         cid: 'qrcode', // same cid value as in the html img src
       },

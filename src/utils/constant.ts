@@ -35,3 +35,6 @@ export const REDIS_KEY = {
   USER_DATA: 'userData',
   GIFTS: 'gifts',
 };
+
+export const BASE_URL = 'https://chubbannualstaffparty2025.com';
+export const API_ENDPOINT_URL = 'https://gateway.chubbannualstaffparty2025.com';

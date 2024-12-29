@@ -9,6 +9,7 @@ import { logger } from './utils/logger';
 import ttsRouter from './routes/tts.routes';
 import redisRouter from './routes/redis.routes';
 import generateRouter from './routes/generate.routes';
+import emailRouter from './routes/email.routes';
 import MongoDB from './utils/mongo';
 import { DATABASE_URL } from './configs/configs';
 const cors = require('cors');
@@ -40,6 +41,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/tts', ttsRouter);
 app.use('/redis', redisRouter);
 app.use('/generate', generateRouter);
+app.use('/email', emailRouter);
 
 app.listen(port, hostname, () => {
   bootstrap();

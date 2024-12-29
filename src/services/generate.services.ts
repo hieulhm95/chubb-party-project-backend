@@ -6,6 +6,8 @@ import { v4 } from 'uuid';
 import { InsertOneModel, UpdateOneModel, ObjectId, Document } from 'mongodb';
 import MongoDB from '../utils/mongo';
 import { createVoice } from './tts.services';
+import https from "https";
+import { Readable } from 'stream';
 
 function delay(time = 3) {
   return new Promise<void>((resolve) => {
@@ -114,9 +116,31 @@ export async function getFile(mediaId: string) {
 
   if (formResponse == null) return null;
 
-  const fileId = formResponse.fileId;
+  if(formResponse.fileId) {
+    const fileId = formResponse.fileId;
 
-  return getFileService(fileId);
+    return getFileService(fileId);
+  }
+  else if(formResponse.messageLink) {
+    return new Promise<{
+      mimeType: string;
+      content: Readable
+    }>((resolve, reject) => {
+      https.get(formResponse.messageLink, (response) => {
+        response.once("error", (err) => {
+          reject(err);
+        });
+
+        resolve({
+          mimeType: response.headers['content-type'] as string,
+          content: response
+        });
+      }).once("error", (err) => {
+        reject(err);
+      })
+    })
+  }
+  return null;
 }
 
 export async function getResponse(mediaId: string) {

@@ -99,7 +99,7 @@ export async function getResponses() {
           document: response,
         },
       });
-      postOperations.push(generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName));
+      // postOperations.push(generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName));
     } else {
       const partialResponse = {} as Partial<FormResponse>;
       if (existedResponse.updatedCount == 3) {
@@ -129,7 +129,7 @@ export async function getResponses() {
           },
         },
       });
-      postOperations.push(generateQRThenSendMail(existedResponse.mediaId as string, response.receiverEmail, response.receiverName));
+      // postOperations.push(generateQRThenSendMail(existedResponse.mediaId as string, response.receiverEmail, response.receiverName));
     }
   }
 

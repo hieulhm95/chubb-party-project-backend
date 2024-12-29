@@ -1,6 +1,6 @@
 import { FPT_API_KEY } from '../configs/configs';
 import { API_ENDPOINT_URL } from '../utils/constant';
-import mime from "mime-types
+import mime from "mime-types";
 import MongoDB from '../utils/mongo';
 
 export async function createVoice(message: string, mediaId: string, gender: string) {

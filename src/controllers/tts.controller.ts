@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import * as ttsServices from '../services/tts.services';
-import * as qrCodeServices from '../services/qrcode.services';
 
 export async function createVoice(req: Request, res: Response, next: NextFunction) {
   try {
@@ -19,24 +18,12 @@ export async function createVoice(req: Request, res: Response, next: NextFunctio
 export async function createVoiceCallback(req: Request, res: Response, next: NextFunction) {
   try {
     const mediaId = req.query.mediaId as string;
-    if (!mediaId) {
-      return res.status(400).json({ message: 'Media ID is required' });
+    const { message, requestid, success } = req.body;
+    if (!mediaId || !success || success === 'false') {
+      return res.status(400).json({ message: 'Error while get voice callback' });
     }
-    console.log('debug callback', mediaId, 'req', req, 'res', res);
-    res.json({ success: true, mediaId });
-
-    // const result = await ttsServices.createVoiceCallback(mediaId);
-    // if (!result || !result?.success) {
-    //   return res.status(500).json({ message: 'Failed to create voice callback' });
-    // }
-
-    // if (!message) {
-
-    //   return res.status(400).json({ message: 'Message is required' });
-    // }
-    // ttsServices.createVoiceCallback(message, (buffer: Buffer) => {
-    //   res.send(buffer);
-    // });
+    console.log('Debug Voice Callback', { success, mediaId, requestid, message });
+    res.json({ success, mediaId, requestid, message });
   } catch (err) {
     console.error(`Error while create voice callback`, (err as any).message);
     next(err);

@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import * as generateServices from '../services/generate.services';
 import mime from "mime-types";
+import ffmpeg from "fluent-ffmpeg";
+import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
+
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 export async function getResponses(req: Request, res: Response, next: NextFunction) {
   try {
@@ -57,7 +61,16 @@ export async function getFileWithExtension(req: Request, res: Response){
     return res.status(404).send("Media not found");
   }
 
-  res.setHeader("Content-Type", result.mimeType as string);
+  res.setHeader("Content-Type", "audio/mp3");
 
-  result.content.pipe(res);
+  if(result.mimeType == "audio/mp3") {
+    result.content.pipe(res);
+  }
+  else {
+    ffmpeg(result.content)
+    .inputFormat(mime.extension(result.mimeType as string) as string)
+    .toFormat("mp3")
+    .pipe(res)
+    .end(true)
+  }
 }

@@ -12,7 +12,6 @@ import { BASE_URL } from '../utils/constant';
 import * as qrCodeServices from "../services/qrcode.services";
 import * as emailServices from "../services/email.services";
 import { logger } from '../utils/logger';
-import mime from "mime-types";
 
 async function stepByStepPromise(promiseList: (Promise<any>)[]) {
   if(promiseList.length == 0) return Promise.resolve();
@@ -194,7 +193,7 @@ export async function getResponse(mediaId: string) {
   if (formResponse == null) return null;
 
   // if(formResponse.filename) 
-  formResponse.mediaLink = "https://gateway.chubbannualstaffparty2025.com/" + formResponse.mediaId + "." + mime.extension(formResponse.mimeType);
+  formResponse.mediaLink = "https://gateway.chubbannualstaffparty2025.com/" + formResponse.mediaId + ".mp3";
 
   return formResponse;
 }

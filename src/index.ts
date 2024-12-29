@@ -7,10 +7,18 @@ import { logger } from './utils/logger';
 // import redisRouter from './routes/redis.routes';
 // import giftRouter from './routes/gift.routes';
 import ttsRouter from './routes/tts.routes';
+import redisRouter from './routes/redis.routes';
+import generateRouter from './routes/generate.routes';
+import MongoDB from './utils/mongo';
+import { DATABASE_URL } from './configs/configs';
 const cors = require('cors');
 
 const app: Express = express();
 const port = process.env.PORT || 4000;
+const hostname = process.env.HOST || '127.0.0.1';
+function bootstrap() {
+  new MongoDB(DATABASE_URL);
+}
 
 // Use Pino HTTP middleware
 app.use(pinoHttp({ logger }));
@@ -30,7 +38,10 @@ app.get('/', (req: Request, res: Response) => {
 // app.use('/redis', redisRouter);
 // app.use('/gift', giftRouter);
 app.use('/tts', ttsRouter);
+app.use('/redis', redisRouter);
+app.use('/generate', generateRouter);
 
-app.listen(port, () => {
-  logger.info(`[Server]: Server is running at http://localhost:${port}`);
+app.listen(port, hostname, () => {
+  bootstrap();
+  logger.info(`[Server]: Server is running at http://${hostname}:${port}`);
 });

@@ -1,39 +1,13 @@
 import { JWT } from 'google-auth-library';
 import { SHEET_ID } from '../configs/configs';
-import https from "https";
 import {
   GoogleSpreadsheet,
   GoogleSpreadsheetRow,
   GoogleSpreadsheetWorksheet,
 } from 'google-spreadsheet';
-import {
-  google
-} from "googleapis";
 import { format } from 'date-fns';
 import { GOOGLE_AUTH } from '../configs/configs';
 import { formatValue } from './utils';
-
-export async function getFile(fileId: string) {
-  const jwt = new JWT({
-    email: GOOGLE_AUTH.client_email,
-    key: GOOGLE_AUTH.private_key,
-    scopes: GOOGLE_AUTH.SCOPES,
-  });
-  const drive = google.drive({
-    version: 'v3',
-    auth: jwt
-  });
-
-  const [fileMeta, fileContent] = await Promise.all([
-    drive.files.get({fileId: fileId, fields: "mimeType"}), 
-    drive.files.get({fileId: fileId, alt: "media"} , {responseType: "stream"})
-  ])
-
-  return {
-    ...fileMeta.data,
-    content: fileContent.data
-  }
-}
 
 export async function connectGoogleApis() {
   const jwt = new JWT({
@@ -41,7 +15,6 @@ export async function connectGoogleApis() {
     key: GOOGLE_AUTH.private_key,
     scopes: GOOGLE_AUTH.SCOPES,
   });
-  console.log(SHEET_ID);
   const doc = new GoogleSpreadsheet(SHEET_ID, jwt);
   await doc.loadInfo();
   return doc;

@@ -8,6 +8,10 @@ import MongoDB from '../utils/mongo';
 import { createVoice } from './tts.services';
 import https from "https";
 import { Readable } from 'stream';
+import { BASE_URL } from '../utils/constant';
+import * as qrCodeServices from "../services/qrcode.services";
+import * as emailServices from "../services/email.services";
+import { logger } from '../utils/logger';
 
 async function stepByStepPromise(promiseList: (Promise<any>)[]) {
   if(promiseList.length == 0) return Promise.resolve();
@@ -24,6 +28,23 @@ function delay(time = 3) {
       resolve();
     }, time * 1000);
   });
+}
+
+async function generateQRThenSendMail(mediaId: string, to: string){
+  const landingPageUrl = `${BASE_URL}/${mediaId}`;
+  const qrCode = await qrCodeServices.generateQRCode(landingPageUrl);
+  if (!qrCode) {
+    return false;
+  }
+  try {
+    await emailServices.sendEmailWithBase64Image(to, qrCode);
+  }
+  catch(e) {
+    logger.error(e);
+    return false;
+  }
+
+  return true;
 }
 
 export async function getResponses() {
@@ -73,6 +94,7 @@ export async function getResponses() {
           document: response,
         },
       });
+      postOperations.push(generateQRThenSendMail(response.mediaId, response.receiverEmail));
     } else {
       const partialResponse = {} as Partial<FormResponse>;
       if (existedResponse.updatedCount == 3) {
@@ -98,6 +120,7 @@ export async function getResponses() {
           },
         },
       });
+      postOperations.push(generateQRThenSendMail(existedResponse.mediaId as string, response.receiverEmail as string));
     }
   }
 

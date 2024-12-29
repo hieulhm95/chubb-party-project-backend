@@ -9,6 +9,15 @@ import { createVoice } from './tts.services';
 import https from "https";
 import { Readable } from 'stream';
 
+async function stepByStepPromise(promiseList: (Promise<any>)[]) {
+  if(promiseList.length == 0) return Promise.resolve();
+  const first = promiseList[0];
+  promiseList.splice(0, 1)
+  await first.then()
+  await delay(1)
+  return stepByStepPromise(promiseList)
+}
+
 function delay(time = 3) {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
@@ -25,7 +34,7 @@ export async function getResponses() {
 
   const db = new MongoDB().getDatabase('localdb');
   const operations: ({ insertOne: InsertOneModel } | { updateOne: UpdateOneModel })[] = [];
-
+  const postOperations = [];
   const collection = db.collection('Response');
 
   for (let i = 0; i < length; i++) {
@@ -47,8 +56,6 @@ export async function getResponses() {
         },
       }
     );
-
-    console.log(existedResponse);
 
     if (!existedResponse) {
       response.mediaId = v4();
@@ -79,8 +86,7 @@ export async function getResponses() {
         if (id) partialResponse.fileId = id;
       }
       else if(response.message) {
-        await createVoice(response.message, existedResponse.mediaId as string, response.gender)
-        await delay()
+        postOperations.push(createVoice(response.message, existedResponse.mediaId as string, response.gender));
       }
       operations.push({
         updateOne: {
@@ -100,6 +106,10 @@ export async function getResponses() {
     operations.length == 0
       ? { insertedCount: 0, modifiedCount: 0 }
       : await collection.bulkWrite(operations);
+
+  if (postOperations.length > 0) {
+    await stepByStepPromise(postOperations)
+  }
 
   return {
     insertedCount: bulkWriteResponse.insertedCount,

@@ -94,9 +94,13 @@ export async function getFileWithExtension(req: Request, res: Response) {
   mediaId = mediaLinkSegment.join('.');
   const destFile = mediaId + ".mp3";
 
+  
   try {
     const destFileInfo = await fsPromise.stat(destFile);
-    if(destFileInfo.isFile()) return fs.createReadStream(destFile).pipe(res);
+    if(destFileInfo.isFile()) {
+      res.setHeader('Content-Type', "audio/mp3");
+      return fs.createReadStream(destFile).pipe(res);
+    }
   }
   catch(_) {}
 
@@ -106,6 +110,7 @@ export async function getFileWithExtension(req: Request, res: Response) {
   }
 
   if (result.mimeType == 'audio/mp3' || result.mimeType == 'audio/mpeg') {
+    res.setHeader('Content-Type', "audio/mp3");
     result.content.pipe(res);
   } else {
     const extension  = (MAPPING_FORMAT as any)[result.mimeType as string];
@@ -129,7 +134,7 @@ export async function getFileWithExtension(req: Request, res: Response) {
               fs.unlink(sourceFile, (_) => {});
             }
           });
-        
+          res.setHeader('Content-Type', "audio/mp3");
           fs.createReadStream(destFile).pipe(res);
         })
         .once("error", (err) => {

@@ -5,9 +5,9 @@ import {
   getFileMimeType,
   getFile as getFileService,
 } from '../utils/googleApis';
-import { mappingDataList } from '../utils/utils';
+import { mappingDataList, redis } from '../utils/utils';
 import { v4 } from 'uuid';
-import { InsertOneModel, UpdateOneModel, ObjectId, Document } from 'mongodb';
+import { InsertOneModel, UpdateOneModel, ObjectId } from 'mongodb';
 import MongoDB from '../utils/mongo';
 import { createVoice } from './tts.services';
 import https from 'https';
@@ -16,6 +16,8 @@ import { BASE_URL } from '../utils/constant';
 import * as qrCodeServices from '../services/qrcode.services';
 import * as emailServices from '../services/email.services';
 import { logger } from '../utils/logger';
+import crypto from 'crypto';
+
 
 async function stepByStepPromise(promiseList: Promise<any>[]) {
   if (promiseList.length == 0) return Promise.resolve();
@@ -61,88 +63,137 @@ export async function getResponses() {
   const postOperations = [];
   const collection = db.collection('Response');
 
-  for (let i = 0; i < length; i++) {
+  let lastRow = parseInt(await redis.get("lastRow") || "0")
+  if (isNaN(lastRow)) lastRow = 0;
+
+  for (let i = lastRow; i < length; i++) {
     const response = data[i];
+    
+    const md5sum = crypto.createHash('md5');
+    md5sum.update(JSON.stringify(response));
+    const hashkey = md5sum.digest("hex");
+
+    const isCached = !!(await redis.get(hashkey));
+
+    if(isCached) continue;
+
+    await redis.set(hashkey, "1");
 
     const email = response.email;
     const receiverEmail = response.receiverEmail;
 
-    const existedResponse = await collection.findOne<Partial<FormResponse>>(
-      {
-        email: email,
-        receiverEmail: receiverEmail,
-      },
-      {
-        projection: {
-          _id: 1,
-          updatedCount: 1,
-          mediaId: 1,
-        },
-      }
-    );
+    const sendMd5sum = crypto.createHash('md5');
+    sendMd5sum.update(`${email}:${receiverEmail}`);
+    const sentHashkey = sendMd5sum.digest("hex");
+    let sentCount = parseInt(await redis.get(sentHashkey) || "0");
 
-    if (!existedResponse) {
-      response.mediaId = v4();
-      response._id = new ObjectId();
-      if (response.filename) {
-        const url = new URL(response.filename);
-        const id = url.searchParams.get('id');
-        if (id) {
-          response.fileId = id;
-          const mimetype = await getFileMimeType(id);
-          response.mimeType = mimetype as string;
-        }
-      } else if (response.message) {
-        postOperations.push(
-          createVoice(response.message, response.mediaId as string, response.gender)
-        );
+    if (sentCount == 2) continue;
+
+    sentCount += 1;
+
+    await redis.set(sentHashkey, sentCount.toString());
+
+    // const existedResponse = await collection.findOne<Partial<FormResponse>>(
+    //   {
+    //     email: email,
+    //     receiverEmail: receiverEmail,
+    //   },
+    //   {
+    //     projection: {
+    //       _id: 1,
+    //       updatedCount: 1,
+    //       mediaId: 1,
+    //       filename: 1
+    //     },
+    //   }
+    // );
+
+    response.mediaId = v4();
+    response._id = new ObjectId();
+    if (response.filename) {
+      const url = new URL(response.filename);
+      const id = url.searchParams.get('id');
+      if (id) {
+        response.fileId = id;
+        const mimetype = await getFileMimeType(id);
+        response.mimeType = mimetype as string;
       }
-      operations.push({
-        insertOne: {
-          document: response,
-        },
-      });
+    } else if (response.message) {
       postOperations.push(
-        generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName)
-      );
-    } else {
-      const partialResponse = {} as Partial<FormResponse>;
-      if (existedResponse.updatedCount == 3) {
-        continue;
-      }
-      if (response.filename) {
-        partialResponse.filename = response.filename;
-        const url = new URL(response.filename);
-        const id = url.searchParams.get('id');
-        if (id) {
-          partialResponse.fileId = id;
-          const mimetype = await getFileMimeType(id);
-          partialResponse.mimeType = mimetype as string;
-        }
-      } else if (response.message) {
-        postOperations.push(
-          createVoice(response.message, existedResponse.mediaId as string, response.gender)
-        );
-      }
-      operations.push({
-        updateOne: {
-          filter: { _id: existedResponse._id },
-          update: {
-            $set: {
-              updatedCount: existedResponse.updatedCount ? existedResponse.updatedCount + 1 : 1,
-              ...partialResponse,
-            },
-          },
-        },
-      });
-      postOperations.push(
-        generateQRThenSendMail(
-          existedResponse.mediaId as string,
-          response.receiverEmail,
-          response.receiverName
-        )
+        createVoice(response.message, response.mediaId as string, response.gender)
       );
     }
+    operations.push({
+      insertOne: {
+        document: response,
+      },
+    });
+    postOperations.push(
+      generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName)
+    );
+
+  //   if (!existedResponse) {
+  //     response.mediaId = v4();
+  //     response._id = new ObjectId();
+  //     if (response.filename) {
+  //       const url = new URL(response.filename);
+  //       const id = url.searchParams.get('id');
+  //       if (id) {
+  //         response.fileId = id;
+  //         const mimetype = await getFileMimeType(id);
+  //         response.mimeType = mimetype as string;
+  //       }
+  //     } else if (response.message) {
+  //       postOperations.push(
+  //         createVoice(response.message, response.mediaId as string, response.gender)
+  //       );
+  //     }
+  //     operations.push({
+  //       insertOne: {
+  //         document: response,
+  //       },
+  //     });
+  //     postOperations.push(
+  //       generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName)
+  //     );
+  //   } else {
+  //     const partialResponse = {} as Partial<FormResponse>;
+  //     if (existedResponse.updatedCount == 3) {
+  //       continue;
+  //     }
+  //     if (response.filename) {
+  //       partialResponse.filename = response.filename;
+  //       const url = new URL(response.filename);
+  //       const id = url.searchParams.get('id');
+  //       if (id) {
+  //         partialResponse.fileId = id;
+  //         const mimetype = await getFileMimeType(id);
+  //         partialResponse.mimeType = mimetype as string;
+  //       }
+  //     } else if (response.message && !existedResponse.filename) {
+  //       postOperations.push(
+  //         createVoice(response.message, existedResponse.mediaId as string, response.gender)
+  //       );
+  //     }
+  //     operations.push({
+  //       updateOne: {
+  //         filter: { _id: existedResponse._id },
+  //         update: {
+  //           $set: {
+  //             updatedCount: existedResponse.updatedCount ? existedResponse.updatedCount + 1 : 1,
+  //             ...partialResponse,
+  //           },
+  //         },
+  //       },
+  //     });
+  //     postOperations.push(
+  //       generateQRThenSendMail(
+  //         existedResponse.mediaId as string,
+  //         response.receiverEmail,
+  //         response.receiverName
+  //       )
+  //     );
+  //   }
   }
 
   const bulkWriteResponse =
@@ -153,6 +204,8 @@ export async function getResponses() {
   if (postOperations.length > 0) {
     await stepByStepPromise(postOperations);
   }
+
+  await redis.set("lastRow", length.toString());
 
   return {
     insertedCount: bulkWriteResponse.insertedCount,

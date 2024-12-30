@@ -1,36 +1,40 @@
 import { MAPPING_RULES } from '../configs/configs';
 import { FormResponse } from '../types/response';
-import { getAllRowsWithCells, getFileMimeType, getFile as getFileService } from '../utils/googleApis';
+import {
+  getAllRowsWithCells,
+  getFileMimeType,
+  getFile as getFileService,
+} from '../utils/googleApis';
 import { mappingDataList } from '../utils/utils';
 import { v4 } from 'uuid';
 import { InsertOneModel, UpdateOneModel, ObjectId, Document } from 'mongodb';
 import MongoDB from '../utils/mongo';
 import { createVoice } from './tts.services';
-import https from "https";
+import https from 'https';
 import { Readable } from 'stream';
 import { BASE_URL } from '../utils/constant';
-import * as qrCodeServices from "../services/qrcode.services";
-import * as emailServices from "../services/email.services";
+import * as qrCodeServices from '../services/qrcode.services';
+import * as emailServices from '../services/email.services';
 import { logger } from '../utils/logger';
 
-async function stepByStepPromise(promiseList: (Promise<any>)[]) {
-  if(promiseList.length == 0) return Promise.resolve();
+async function stepByStepPromise(promiseList: Promise<any>[]) {
+  if (promiseList.length == 0) return Promise.resolve();
   const first = promiseList[0];
-  promiseList.splice(0, 1)
-  await first.then()
-  await delay(1)
-  return stepByStepPromise(promiseList)
+  promiseList.splice(0, 1);
+  await first.then();
+  await delay(1);
+  return stepByStepPromise(promiseList);
 }
 
 function delay(time = 3) {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(resolve => {
     setTimeout(() => {
       resolve();
     }, time * 1000);
   });
 }
 
-async function generateQRThenSendMail(mediaId: string, to: string, name: string){
+async function generateQRThenSendMail(mediaId: string, to: string, name: string) {
   const landingPageUrl = `${BASE_URL}/${mediaId}`;
   const qrCode = await qrCodeServices.generateQRCode(landingPageUrl);
   if (!qrCode) {
@@ -38,8 +42,7 @@ async function generateQRThenSendMail(mediaId: string, to: string, name: string)
   }
   try {
     await emailServices.sendEmailWithBase64Image(to, qrCode, name);
-  }
-  catch(e) {
+  } catch (e) {
     logger.error(e);
     return false;
   }
@@ -73,7 +76,7 @@ export async function getResponses() {
         projection: {
           _id: 1,
           updatedCount: 1,
-          mediaId: 1
+          mediaId: 1,
         },
       }
     );
@@ -89,16 +92,19 @@ export async function getResponses() {
           const mimetype = await getFileMimeType(id);
           response.mimeType = mimetype as string;
         }
-      }
-      else if(response.message) {
-        postOperations.push(createVoice(response.message, response.mediaId as string, response.gender));
+      } else if (response.message) {
+        postOperations.push(
+          createVoice(response.message, response.mediaId as string, response.gender)
+        );
       }
       operations.push({
         insertOne: {
           document: response,
         },
       });
-      // postOperations.push(generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName));
+      postOperations.push(
+        generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName)
+      );
     } else {
       const partialResponse = {} as Partial<FormResponse>;
       if (existedResponse.updatedCount == 3) {
@@ -113,9 +119,10 @@ export async function getResponses() {
           const mimetype = await getFileMimeType(id);
           partialResponse.mimeType = mimetype as string;
         }
-      }
-      else if(response.message) {
-        postOperations.push(createVoice(response.message, existedResponse.mediaId as string, response.gender));
+      } else if (response.message) {
+        postOperations.push(
+          createVoice(response.message, existedResponse.mediaId as string, response.gender)
+        );
       }
       operations.push({
         updateOne: {
@@ -128,7 +135,13 @@ export async function getResponses() {
           },
         },
       });
-      // postOperations.push(generateQRThenSendMail(existedResponse.mediaId as string, response.receiverEmail, response.receiverName));
+      postOperations.push(
+        generateQRThenSendMail(
+          existedResponse.mediaId as string,
+          response.receiverEmail,
+          response.receiverName
+        )
+      );
     }
   }
 
@@ -138,7 +151,7 @@ export async function getResponses() {
       : await collection.bulkWrite(operations);
 
   if (postOperations.length > 0) {
-    await stepByStepPromise(postOperations)
+    await stepByStepPromise(postOperations);
   }
 
   return {
@@ -156,29 +169,30 @@ export async function getFile(mediaId: string) {
 
   if (formResponse == null) return null;
 
-  if(formResponse.fileId) {
+  if (formResponse.fileId) {
     const fileId = formResponse.fileId;
 
     return getFileService(fileId);
-  }
-  else if(formResponse.messageLink) {
+  } else if (formResponse.messageLink) {
     return new Promise<{
       mimeType: string;
-      content: Readable
+      content: Readable;
     }>((resolve, reject) => {
-      https.get(formResponse.messageLink, (response) => {
-        response.once("error", (err) => {
+      https
+        .get(formResponse.messageLink, response => {
+          response.once('error', err => {
+            reject(err);
+          });
+
+          resolve({
+            mimeType: response.headers['content-type'] as string,
+            content: response,
+          });
+        })
+        .once('error', err => {
           reject(err);
         });
-
-        resolve({
-          mimeType: response.headers['content-type'] as string,
-          content: response
-        });
-      }).once("error", (err) => {
-        reject(err);
-      })
-    })
+    });
   }
   return null;
 }
@@ -192,8 +206,9 @@ export async function getResponse(mediaId: string) {
 
   if (formResponse == null) return null;
 
-  // if(formResponse.filename) 
-  formResponse.mediaLink = "https://gateway.chubbannualstaffparty2025.com/" + formResponse.mediaId + ".mp3";
+  // if(formResponse.filename)
+  formResponse.mediaLink =
+    'https://gateway.chubbannualstaffparty2025.com/' + formResponse.mediaId + '.mp3';
 
   return formResponse;
 }

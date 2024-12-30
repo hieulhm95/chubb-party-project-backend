@@ -124,8 +124,9 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
       margin: 0;
       padding: 0;
       -webkit-text-size-adjust: 100%;
-      background-color: #FFFFFF;
+      background-color: #f5f5f5;
       color: #000000;
+      padding: 24px;
     "
   >
     <!--[if IE]><div class="ie-container"><![endif]-->
@@ -140,7 +141,7 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
         vertical-align: top;
         min-width: 320px;
         margin: 0 auto;
-        background-color: #FFFFFF;
+        background-color: #f5f5f5;
         width: 100%;
       "
       cellpadding="0"
@@ -156,7 +157,6 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
             "
           >
             <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #FFFFFF;"><![endif]-->
-
             <div class="u-row-container" style="padding: 0px; background-color: transparent">
               <div
                 class="u-row"
@@ -167,7 +167,118 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                   overflow-wrap: break-word;
                   word-wrap: break-word;
                   word-break: break-word;
-                  background-color: #F7F7F7;
+                  background-color: transparent;
+                "
+              >
+                <div
+                  style="
+                    border-collapse: collapse;
+                    display: table;
+                    width: 100%;
+                    height: 100%;
+                    background-color: transparent;
+                  "
+                >
+                  <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: transparent;"><![endif]-->
+
+                  <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
+                  <div
+                    class="u-col u-col-100"
+                    style="
+                      max-width: 320px;
+                      min-width: 600px;
+                      display: table-cell;
+                      vertical-align: top;
+                    "
+                  >
+                    <div style="height: 100%; width: 100% !important">
+                      <!--[if (!mso)&(!IE)]><!--><div
+                        style="
+                          box-sizing: border-box;
+                          height: 100%;
+                          padding: 0px;
+                          border-top: 0px solid transparent;
+                          border-left: 0px solid transparent;
+                          border-right: 0px solid transparent;
+                          border-bottom: 0px solid transparent;
+                        "
+                      ><!--<![endif]-->
+                        <table
+                          style="font-family: arial, helvetica, sans-serif"
+                          role="presentation"
+                          cellpadding="0"
+                          cellspacing="0"
+                          width="100%"
+                          border="0"
+                        >
+                          <tbody>
+                            <tr>
+                              <td
+                                style="
+                                  overflow-wrap: break-word;
+                                  word-break: break-word;
+                                  padding: 0px;
+                                  font-family: arial, helvetica, sans-serif;
+                                "
+                                align="left"
+                              >
+                                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                  <tr>
+                                    <td
+                                      style="padding-right: 0px; padding-left: 0px"
+                                      align="center"
+                                    >
+                                      <img
+                                        align="center"
+                                        border="0"
+                                        src="https://readiness.vn/wp-content/uploads/2024/12/674e33dd-af9a-4c89-a80e-5aefcac7c3ad-2.jpeg"
+                                        alt="image"
+                                        title="image"
+                                        style="
+                                          outline: none;
+                                          text-decoration: none;
+                                          -ms-interpolation-mode: bicubic;
+                                          clear: both;
+                                          display: inline-block !important;
+                                          border: none;
+                                          height: auto;
+                                          float: none;
+                                          width: 100%;
+                                          max-width: 600px;
+                                          border-top-left-radius: 5px;
+                                          border-top-right-radius: 5px;
+                                        "
+                                        width="600"
+                                      />
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <!--[if (!mso)&(!IE)]><!-->
+                      </div>
+                      <!--<![endif]-->
+                    </div>
+                  </div>
+                  <!--[if (mso)|(IE)]></td><![endif]-->
+                  <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+                </div>
+              </div>
+            </div>
+            <div class="u-row-container" style="padding: 0px; background-color: transparent">
+              <div
+                class="u-row"
+                style="
+                  margin: 0 auto;
+                  min-width: 320px;
+                  max-width: 600px;
+                  overflow-wrap: break-word;
+                  word-wrap: break-word;
+                  word-break: break-word;
+                  background-color: #ffffff;
                   border-radius: 5px;
                 "
               >
@@ -244,7 +355,16 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                     word-wrap: break-word;
                                   "
                                 >
-                                  <p style="line-height: 140%; margin: 0px; margin-bottom: 20px">
+                                  <p
+                                    style="
+                                      line-height: 140%;
+                                      margin: 0px;
+                                      margin-bottom: 20px;
+                                      color: #6e27c5;
+                                      font-size: 32px;
+                                      text-transform: uppercase;
+                                    "
+                                  >
                                     Annual Staff Party 2025
                                   </p>
                                 </div>
@@ -267,7 +387,7 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                 style="
                                   overflow-wrap: break-word;
                                   word-break: break-word;
-                                  padding: 0px 50px 40px 30px;
+                                  padding: 0px 30px 40px 20px;
                                   font-family: arial, helvetica, sans-serif;
                                 "
                                 align="left"
@@ -282,10 +402,9 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                     word-wrap: break-word;
                                   "
                                 >
-                                  <p style="line-height: 170%; margin: 0px">Xin chào <b>${
-                                    name || to
-                                  }</b>
-                                </p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Xin chào <b>${name || to}</b>
+                                  </p>
                                   <br />
                                   <p style="line-height: 170%; margin: 0px"></p>
                                   <p style="line-height: 170%; margin: 0px">
@@ -298,25 +417,31 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                   <p style="line-height: 170%; margin: 0px">
                                     Mã QR code thông điệp của Anh/Chị:
                                   </p>
-                                  <div style="text-align: center; margin-top: 20px; margin-bottom: 20px">
+                                  <div
+                                    style="
+                                      text-align: center;
+                                      margin-top: 20px;
+                                      margin-bottom: 20px;
+                                    "
+                                  >
                                     <img src="cid:qrcode" alt="QR Code" />
-                                   </div>
+                                  </div>
                                   <p style="line-height: 170%; margin: 0px"></p>
                                   <p style="line-height: 170%; margin: 0px">
                                     Để lắng nghe thông điệp này, Anh/Chị hãy mang mã QR code đến sự
-                                    kiện  Annual Staff Party 2025 nhé!
+                                    kiện Annual Staff Party 2025 nhé!
                                   </p>
-                                  <ul>
+                                  <ul style="padding-left: 16px">
                                     <li style="line-height: 23.8px">
-                                     <b>Thời gian sử dụng QR code thông điệp:</b>  17:00 – 18:00, ngày
-                                      10/01/2025
+                                      <b>Thời gian sử dụng QR code thông điệp:</b> 17:00 – 18:00,
+                                      ngày 10/01/2025
                                     </li>
                                     <li style="line-height: 23.8px">
                                       <b>Thời gian sự kiện:</b> 17:00 – 22:00, ngày 10/01/2025
                                     </li>
                                     <li style="line-height: 23.8px">
-                                      <b>Địa điểm:</b> The Adora Center, 431 Hoàng Văn Thụ, Phường 4, Q.
-                                      Tân Bình, TP.HCM
+                                      <b>Địa điểm:</b> The Adora Center, 431 Hoàng Văn Thụ, Phường
+                                      4, Q. Tân Bình, TP.HCM
                                     </li>
                                   </ul>
                                   <p style="line-height: 170%; margin: 0px">
@@ -341,15 +466,14 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                   </p>
                                   <ul style="padding-left: 16px">
                                     <li style="line-height: 23.8px">
-                                        HR – Trần Đức Minh |
-                                        <a
-                                          href="mailto:DucMinh.Tran@chubb.com"
-                                        >DucMinh.Tran@chubb.com</a>
+                                      HR – Trần Đức Minh |
+                                      <a href="mailto:DucMinh.Tran@chubb.com"
+                                        >DucMinh.Tran@chubb.com</a
+                                      >
                                     </li>
-                                      <li style="line-height: 23.8px">
-                                        E&amp;A – Nguyễn Tấn Phát |
-                                        <a
-                                          href="mailto:DucMinh.Tran@chubb.com"
+                                    <li style="line-height: 23.8px">
+                                      E&amp;A – Nguyễn Tấn Phát |
+                                      <a href="mailto:DucMinh.Tran@chubb.com"
                                         >TanPhat.Nguyen@chubb.com</a
                                       >
                                     </li>

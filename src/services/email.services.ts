@@ -284,7 +284,8 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                 >
                                   <p style="line-height: 170%; margin: 0px">Xin chào <b>${
                                     name || to
-                                  }</b></p>
+                                  }</b>
+                                </p>
                                   <br />
                                   <p style="line-height: 170%; margin: 0px"></p>
                                   <p style="line-height: 170%; margin: 0px">
@@ -296,17 +297,14 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                   <p style="line-height: 170%; margin: 0px"></p>
                                   <p style="line-height: 170%; margin: 0px">
                                     Mã QR code thông điệp của Anh/Chị:
-                                    <div style="text-align: center; margin-top: 20px; margin-bottom: 20px">
-                                     <img src="cid:qrcode" alt="QR Code" />
-                                    </div>
                                   </p>
+                                  <div style="text-align: center; margin-top: 20px; margin-bottom: 20px">
+                                    <img src="cid:qrcode" alt="QR Code" />
+                                   </div>
                                   <p style="line-height: 170%; margin: 0px"></p>
                                   <p style="line-height: 170%; margin: 0px">
                                     Để lắng nghe thông điệp này, Anh/Chị hãy mang mã QR code đến sự
-                                    kiện
-                                  </p>
-                                  <p style="line-height: 170%; margin: 0px">
-                                    Annual Staff Party 2025 nhé!
+                                    kiện  Annual Staff Party 2025 nhé!
                                   </p>
                                   <ul>
                                     <li style="line-height: 23.8px">
@@ -342,20 +340,18 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                     Mọi thắc mắc hoặc đề xuất vui lòng liên hệ:
                                   </p>
                                   <ul style="padding-left: 16px">
-                                    <li>
-                                      <a style="line-height: 23.8px">
+                                    <li style="line-height: 23.8px">
                                         HR – Trần Đức Minh |
                                         <a
                                           href="mailto:DucMinh.Tran@chubb.com"
-                                        />DucMinh.Tran@chubb.com</a
-                                      >
+                                        >DucMinh.Tran@chubb.com</a>
                                     </li>
                                     <li>
                                       <a style="line-height: 23.8px">
                                         E&amp;A – Nguyễn Tấn Phát |
                                         <a
                                           href="mailto:DucMinh.Tran@chubb.com"
-                                        />TanPhat.Nguyen@chubb.com</a
+                                        >TanPhat.Nguyen@chubb.com</a
                                       >
                                     </li>
                                   </ul>

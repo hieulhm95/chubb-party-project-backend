@@ -1,7 +1,13 @@
 import { Redis } from 'ioredis';
 import { REDIS_URI } from '../configs/configs';
 
-let redis = new Redis(REDIS_URI);
+const globalAny = global as any;
+
+if(!globalAny.redis) {
+  globalAny.redis = new Redis(REDIS_URI);
+}
+
+export const redis: Redis = globalAny.redis;
 
 export const convertBase64 = (str: string): string => {
   return Buffer.from(str).toString('base64');

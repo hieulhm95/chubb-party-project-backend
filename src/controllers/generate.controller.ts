@@ -2,31 +2,33 @@ import { NextFunction, Request, Response } from 'express';
 import * as generateServices from '../services/generate.services';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
+import fsPromise from "fs/promises";
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
+import { logger } from '../utils/logger';
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 ffmpeg.getAvailableCodecs((err, codecs) => {
   if (err) {
-    console.error('Error fetching codecs:', err);
+    logger.error('Error fetching codecs:', err);
     return;
   }
 
-  console.log('Available codecs:');
-  console.log(codecs.aac);
-  console.log(codecs.libmp3lame);
+  logger.info('Available codecs:');
+  logger.info(codecs.aac);
+  logger.info(codecs.libmp3lame);
 });
 
 // Check available formats
 ffmpeg.getAvailableFormats((err, formats) => {
   if (err) {
-    console.error('Error fetching formats:', err);
+    logger.error('Error fetching formats:', err);
     return;
   }
 
-  console.log('Available formats:');
-  console.log(formats.m4a);
-  console.log(formats.mp3);
+  logger.info('Available formats:');
+  logger.info(formats.m4a);
+  logger.info(formats.mp3);
 });
 
 export async function getResponses(req: Request, res: Response, next: NextFunction) {
@@ -90,26 +92,65 @@ export async function getFileWithExtension(req: Request, res: Response) {
   mediaLinkSegment.splice(1, mediaLinkSegment.length - 1);
 
   mediaId = mediaLinkSegment.join('.');
+  const destFile = mediaId + ".mp3";
+
+  
+  try {
+    const destFileInfo = await fsPromise.stat(destFile);
+    if(destFileInfo.isFile()) {
+      res.setHeader('Content-Type', "audio/mp3");
+      return fs.createReadStream(destFile).pipe(res);
+    }
+  }
+  catch(_) {}
+
   const result = await generateServices.getFile(mediaId);
   if (result == null) {
     return res.status(404).send('Media not found');
   }
 
   if (result.mimeType == 'audio/mp3' || result.mimeType == 'audio/mpeg') {
+    res.setHeader('Content-Type', "audio/mp3");
     result.content.pipe(res);
   } else {
-    const mp3Writer = fs.createWriteStream(mediaId + '.m4a');
+    const extension  = (MAPPING_FORMAT as any)[result.mimeType as string];
+    if (!extension) return res.status(404).send("Meida not found");
+    
+    const sourceFile = mediaId + "." + extension;
+    const mp3Writer = fs.createWriteStream(sourceFile);
+    let isError = false;
     result.content.pipe(mp3Writer, { end: true });
     result.content.once('close', () => {
       mp3Writer.end();
       mp3Writer.close();
-      ffmpeg(mediaId + '.m4a')
+      if(!isError) {
+        ffmpeg(sourceFile)
         .toFormat('mp3')
         .audioCodec('libmp3lame')
-        .save(mediaId + '.mp3')
+        .save(destFile)
         .once('end', () => {
-          fs.createReadStream(mediaId + '.mp3').pipe(res);
+          fs.stat(sourceFile, (err) => {
+            if(!err) {
+              fs.unlink(sourceFile, (_) => {});
+            }
+          });
+          res.setHeader('Content-Type', "audio/mp3");
+          fs.createReadStream(destFile).pipe(res);
+        })
+        .once("error", (err) => {
+          if(!isError) {
+            isError = true;
+            logger.error(err);
+            res.status(404).send("Media not found");
+          }
         });
-    });
+      }
+    }).once("error", (err) => {
+      if(!isError) {
+        isError = true;
+        logger.error(err);
+        res.status(404).send("Media not found");
+      }
+    })
   }
 }

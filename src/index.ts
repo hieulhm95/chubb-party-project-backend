@@ -13,10 +13,11 @@ import emailRouter from './routes/email.routes';
 import MongoDB from './utils/mongo';
 import { DATABASE_URL } from './configs/configs';
 import { getFileWithExtension } from './controllers/generate.controller';
+import { scanner } from './task';
 const cors = require('cors');
 
 const app: Express = express();
-const port = process.env.PORT || 4000;
+const port = parseInt(process.env.PORT || "0") || 4000;
 const hostname = process.env.HOST || '127.0.0.1';
 function bootstrap() {
   new MongoDB(DATABASE_URL);
@@ -47,7 +48,8 @@ app.use('/generate', generateRouter);
 app.use('/email', emailRouter);
 app.get("/:mediaId", getFileWithExtension);
 
-app.listen(port, hostname, () => {
+app.listen(port, hostname, async () => {
   bootstrap();
+  await scanner();
   logger.info(`[Server]: Server is running at http://${hostname}:${port}`);
 });

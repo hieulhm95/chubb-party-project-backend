@@ -11,65 +11,380 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
     },
   });
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Email Template</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
+  const htmlContent = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+>
+  <head>
+    <!--[if gte mso 9]>
+      <xml>
+        <o:OfficeDocumentSettings>
+          <o:AllowPNG />
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+      </xml>
+    <![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--<![endif]-->
+    <title></title>
+
+    <style type="text/css">
+      @media only screen and (min-width: 620px) {
+        .u-row {
+          width: 600px !important;
+        }
+
+        .u-row .u-col {
+          vertical-align: top;
+        }
+
+        .u-row .u-col-100 {
+          width: 600px !important;
+        }
+      }
+
+      @media only screen and (max-width: 620px) {
+        .u-row-container {
+          max-width: 100% !important;
+          padding-left: 0px !important;
+          padding-right: 0px !important;
+        }
+
+        .u-row {
+          width: 100% !important;
+        }
+
+        .u-row .u-col {
+          display: block !important;
+          width: 100% !important;
+          min-width: 320px !important;
+          max-width: 100% !important;
+        }
+
+        .u-row .u-col > div {
+          margin: 0 auto;
+        }
+
+        .u-row .u-col img {
+          max-width: 100% !important;
+        }
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      table,
+      td,
+      tr {
+        border-collapse: collapse;
+        vertical-align: top;
+      }
+      .ie-container table,
+      .mso-container table {
+        table-layout: fixed;
+      }
+      * {
+        line-height: inherit;
+      }
+      a[x-apple-data-detectors='true'] {
+        color: inherit !important;
+        text-decoration: none !important;
+      }
+
+      table,
+      td {
+        color: #000000;
+      }
+    </style>
+
+    <!--[if !mso]><!-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Arvo&display=swap"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Raleway:400,700&display=swap"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!--<![endif]-->
+  </head>
+
+  <body
+    class="clean-body u_body"
+    style="
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
-    }
-    .container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      text-align: center;
-      padding: 10px 0;
-    }
-    .content {
-      padding: 20px;
-    }
-    .footer {
-      text-align: center;
-      padding: 10px 0;
-      font-size: 12px;
-      color: #888888;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="content">
-      <p>Xin chào ${name || to},</p>
-      <p>Anh/Chị vừa nhận được một thông điệp chân thành từ một người đồng đội tại Chubb Life Việt Nam. Đây là món quà đặc biệt dành riêng cho Anh/Chị.</p>
-      <p>Mã QR code thông điệp của Anh/Chị: <img src="cid:qrcode" alt="QR Code" /></p>
+      -webkit-text-size-adjust: 100%;
+      background-color: #FFFFFF;
+      color: #000000;
+    "
+  >
+    <!--[if IE]><div class="ie-container"><![endif]-->
+    <!--[if mso]><div class="mso-container"><![endif]-->
+    <table
+      style="
+        border-collapse: collapse;
+        table-layout: fixed;
+        border-spacing: 0;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        vertical-align: top;
+        min-width: 320px;
+        margin: 0 auto;
+        background-color: #FFFFFF;
+        width: 100%;
+      "
+      cellpadding="0"
+      cellspacing="0"
+    >
+      <tbody>
+        <tr style="vertical-align: top">
+          <td
+            style="
+              word-break: break-word;
+              border-collapse: collapse !important;
+              vertical-align: top;
+            "
+          >
+            <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #FFFFFF;"><![endif]-->
 
-      <p>Để lắng nghe thông điệp này, Anh/Chị hãy mang mã QR code đến sự kiện Annual Staff Party 2025 nhé!
-Thời gian sử dụng QR code thông điệp: 17:00 – 18:00, ngày 10/01/2025
-Thời gian sự kiện: 17:00 – 22:00, ngày 10/01/2025Địa điểm: The Adora Center, 431 Hoàng Văn Thụ, Phường 4, Q. Tân Bình, TP.HCM</p>
-<p>Cùng Chubb Life Việt Nam trải nghiệm khoảnh khắc ý nghĩa này và lắng nghe những nhịp đập từ trái tim! 💓</p>
-<p>Hẹn gặp Anh/Chị tại Annual Staff Party 2025</p>
-<p>Trân trọng, <br /> Ban tổ chức Annual Staff Party 2025.</p>
+            <div class="u-row-container" style="padding: 0px; background-color: transparent">
+              <div
+                class="u-row"
+                style="
+                  margin: 0 auto;
+                  min-width: 320px;
+                  max-width: 600px;
+                  overflow-wrap: break-word;
+                  word-wrap: break-word;
+                  word-break: break-word;
+                  background-color: #F7F7F7;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    border-collapse: collapse;
+                    display: table;
+                    width: 100%;
+                    height: 100%;
+                    background-color: transparent;
+                  "
+                >
+                  <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: transparent;"><![endif]-->
 
-<p>Mọi thắc mắc hoặc đề xuất vui lòng liên hệ:<br/>
-HR – Trần Đức Minh | <a href="mailto:DucMinh.Tran@chubb.com">DucMinh.Tran@chubb.com</a> <br/>
-E&A – Nguyễn Tấn Phát | <a href="mailto:DucMinh.Tran@chubb.com">TanPhat.Nguyen@chubb.com</a></p>
-    </div>
-    <div class="footer">
-      <p>&copy; 2024 CHUBB. All rights reserved.</p>
-    </div>
-  </div>
-</body>
+                  <!--[if (mso)|(IE)]><td align="center" width="580" style="width: 580px;padding: 0px;border-top: 0px solid transparent;border-left: 10px solid #ffffff;border-right: 10px solid #ffffff;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;" valign="top"><![endif]-->
+                  <div
+                    class="u-col u-col-100"
+                    style="
+                      max-width: 320px;
+                      min-width: 600px;
+                      display: table-cell;
+                      vertical-align: top;
+                    "
+                  >
+                    <div
+                      style="
+                        height: 100%;
+                        width: 100% !important;
+                        border-radius: 0px;
+                        -webkit-border-radius: 0px;
+                        -moz-border-radius: 0px;
+                      "
+                    >
+                      <!--[if (!mso)&(!IE)]><!--><div
+                        style="
+                          box-sizing: border-box;
+                          height: 100%;
+                          padding: 0px;
+                          border-top: 0px solid transparent;
+                          border-left: 10px solid #ffffff;
+                          border-right: 10px solid #ffffff;
+                          border-bottom: 0px solid transparent;
+                          border-radius: 0px;
+                          -webkit-border-radius: 0px;
+                          -moz-border-radius: 0px;
+                        "
+                      ><!--<![endif]-->
+                        <table
+                          style="font-family: arial, helvetica, sans-serif"
+                          role="presentation"
+                          cellpadding="0"
+                          cellspacing="0"
+                          width="100%"
+                          border="0"
+                        >
+                          <tbody>
+                            <tr>
+                              <td
+                                style="
+                                  overflow-wrap: break-word;
+                                  word-break: break-word;
+                                  padding: 20px 50px 0px 30px;
+                                  font-family: arial, helvetica, sans-serif;
+                                "
+                                align="left"
+                              >
+                                <div
+                                  style="
+                                    font-family: Arvo;
+                                    font-size: 24px;
+                                    color: #000000;
+                                    line-height: 140%;
+                                    text-align: center;
+                                    word-wrap: break-word;
+                                  "
+                                >
+                                  <p style="line-height: 140%; margin: 0px; margin-bottom: 20px">
+                                    Annual Staff Party 2025
+                                  </p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <table
+                          style="font-family: arial, helvetica, sans-serif"
+                          role="presentation"
+                          cellpadding="0"
+                          cellspacing="0"
+                          width="100%"
+                          border="0"
+                        >
+                          <tbody>
+                            <tr>
+                              <td
+                                style="
+                                  overflow-wrap: break-word;
+                                  word-break: break-word;
+                                  padding: 0px 50px 40px 30px;
+                                  font-family: arial, helvetica, sans-serif;
+                                "
+                                align="left"
+                              >
+                                <div
+                                  style="
+                                    font-family: 'Raleway', sans-serif;
+                                    font-size: 14px;
+                                    color: #151515;
+                                    line-height: 170%;
+                                    text-align: left;
+                                    word-wrap: break-word;
+                                  "
+                                >
+                                  <p style="line-height: 170%; margin: 0px">Xin chào <b>${
+                                    name || to
+                                  }</b></p>
+                                  <br />
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Anh/Chị vừa nhận được một thông điệp chân thành từ một người
+                                    đồng đội tại Chubb Life Việt Nam. Đây là món quà đặc biệt dành
+                                    riêng cho Anh/Chị.
+                                  </p>
+                                  <br />
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Mã QR code thông điệp của Anh/Chị:
+                                    <div style="text-align: center; margin-top: 20px; margin-bottom: 20px">
+                                     <img src="cid:qrcode" alt="QR Code" />
+                                    </div>
+                                  </p>
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Để lắng nghe thông điệp này, Anh/Chị hãy mang mã QR code đến sự
+                                    kiện
+                                  </p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Annual Staff Party 2025 nhé!
+                                  </p>
+                                  <ul>
+                                    <li style="line-height: 23.8px">
+                                     <b>Thời gian sử dụng QR code thông điệp:</b>  17:00 – 18:00, ngày
+                                      10/01/2025
+                                    </li>
+                                    <li style="line-height: 23.8px">
+                                      <b>Thời gian sự kiện:</b> 17:00 – 22:00, ngày 10/01/2025
+                                    </li>
+                                    <li style="line-height: 23.8px">
+                                      <b>Địa điểm:</b> The Adora Center, 431 Hoàng Văn Thụ, Phường 4, Q.
+                                      Tân Bình, TP.HCM
+                                    </li>
+                                  </ul>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Cùng Chubb Life Việt Nam trải nghiệm khoảnh khắc ý nghĩa này và
+                                    lắng nghe những nhịp đập từ trái tim! 💓
+                                  </p>
+                                  <br />
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Hẹn gặp Anh/Chị tại Annual Staff Party 2025
+                                  </p>
+                                  <br />
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                  <p style="line-height: 170%; margin: 0px">Trân trọng,</p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Ban tổ chức Annual Staff Party 2025.
+                                  </p>
+                                  <br />
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                  <p style="line-height: 170%; margin: 0px">
+                                    Mọi thắc mắc hoặc đề xuất vui lòng liên hệ:
+                                  </p>
+                                  <ul style="padding-left: 16px">
+                                    <li>
+                                      <a style="line-height: 23.8px">
+                                        HR – Trần Đức Minh |
+                                        <a
+                                          href="mailto:DucMinh.Tran@chubb.com"
+                                        />DucMinh.Tran@chubb.com</a
+                                      >
+                                    </li>
+                                    <li>
+                                      <a style="line-height: 23.8px">
+                                        E&amp;A – Nguyễn Tấn Phát |
+                                        <a
+                                          href="mailto:DucMinh.Tran@chubb.com"
+                                        />TanPhat.Nguyen@chubb.com</a
+                                      >
+                                    </li>
+                                  </ul>
+                                  <p style="line-height: 170%; margin: 0px"></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                        <!--[if (!mso)&(!IE)]><!-->
+                      </div>
+                      <!--<![endif]-->
+                    </div>
+                  </div>
+                  <!--[if (mso)|(IE)]></td><![endif]-->
+                  <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
+                </div>
+              </div>
+            </div>
+
+            <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!--[if mso]></div><![endif]-->
+    <!--[if IE]></div><![endif]-->
+  </body>
 </html>
 `;
 

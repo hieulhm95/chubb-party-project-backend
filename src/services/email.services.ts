@@ -346,8 +346,7 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
                                           href="mailto:DucMinh.Tran@chubb.com"
                                         >DucMinh.Tran@chubb.com</a>
                                     </li>
-                                    <li>
-                                      <a style="line-height: 23.8px">
+                                      <li style="line-height: 23.8px">
                                         E&amp;A – Nguyễn Tấn Phát |
                                         <a
                                           href="mailto:DucMinh.Tran@chubb.com"

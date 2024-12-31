@@ -8,7 +8,7 @@ export async function generateQRCode(text: string): Promise<string> {
     return url;
   } catch (err) {
     console.error('Error generating QR code', err);
-    insertLog({
+    await insertLog({
       message: 'Error generating QR code',
       error: err,
       type: 'email',

@@ -527,7 +527,7 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent: ' + info.response);
   } catch (error) {
-    insertLog({
+    await insertLog({
       message: 'Error sending email',
       error: error,
       type: 'email',

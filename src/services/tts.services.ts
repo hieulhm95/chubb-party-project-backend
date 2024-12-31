@@ -17,7 +17,7 @@ export async function createVoice(message: string, mediaId: string, gender: stri
       body: message,
     });
     if (!response.ok) {
-      insertLog({
+      await insertLog({
         message: 'Error while creating voice HTTP error! Status: ${response.status}`',
         error: null,
         type: 'tts',
@@ -28,7 +28,7 @@ export async function createVoice(message: string, mediaId: string, gender: stri
     const data = await response.json();
     return data;
   } catch (err) {
-    insertLog({
+    await insertLog({
       message: 'Error while creating voice',
       error: err,
       type: 'tts',
@@ -68,7 +68,7 @@ export async function createVoiceCallback(mediaId: string, mediaLink: string) {
     };
   } catch (err) {
     console.error('Error while creating voice callback:', err);
-    insertLog({
+    await insertLog({
       message: 'Error while creating voice callback:',
       error: err,
       type: 'tts',

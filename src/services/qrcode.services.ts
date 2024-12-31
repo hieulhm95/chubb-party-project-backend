@@ -1,4 +1,5 @@
 import QRCode from 'qrcode';
+import { insertLog } from './log.services';
 // import fs from 'fs';
 
 export async function generateQRCode(text: string): Promise<string> {
@@ -7,6 +8,12 @@ export async function generateQRCode(text: string): Promise<string> {
     return url;
   } catch (err) {
     console.error('Error generating QR code', err);
+    insertLog({
+      message: 'Error generating QR code',
+      error: err,
+      type: 'email',
+      data: JSON.stringify({ text: text }),
+    });
     throw err;
   }
 }

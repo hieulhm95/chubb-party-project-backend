@@ -1,7 +1,8 @@
 import { FPT_API_KEY } from '../configs/configs';
 import { API_ENDPOINT_URL } from '../utils/constant';
-import mime from "mime-types";
+import mime from 'mime-types';
 import MongoDB from '../utils/mongo';
+import { insertLog } from './log.services';
 
 export async function createVoice(message: string, mediaId: string, gender: string) {
   try {
@@ -9,18 +10,30 @@ export async function createVoice(message: string, mediaId: string, gender: stri
       method: 'POST',
       headers: {
         'api-key': FPT_API_KEY,
-        voice: gender === 'Nam' ? 'minhquang' : 'linhsan',
+        voice: gender === 'Anh' ? 'minhquang' : 'linhsan',
         'Cache-Control': 'no-cache',
         callback_url: `${API_ENDPOINT_URL}/tts/callback?mediaId=${mediaId}`,
       },
       body: message,
     });
     if (!response.ok) {
+      insertLog({
+        message: 'Error while creating voice HTTP error! Status: ${response.status}`',
+        error: null,
+        type: 'tts',
+        data: JSON.stringify({ message, mediaId, gender }),
+      });
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const data = await response.json();
     return data;
   } catch (err) {
+    insertLog({
+      message: 'Error while creating voice',
+      error: err,
+      type: 'tts',
+      data: JSON.stringify({ message, mediaId, gender }),
+    });
     console.error('Error while creating voice:', err);
   }
 }
@@ -30,27 +43,36 @@ export async function createVoiceCallback(mediaId: string, mediaLink: string) {
   const collection = db.collection('Response');
 
   try {
-    const mimeType = mime.lookup(mediaLink)
-    
-    const result = await collection.updateOne({"mediaId": mediaId},{
-      "$set": {
-        "messageLink": mediaLink,
-        "mimeType": mimeType
+    const mimeType = mime.lookup(mediaLink);
+
+    const result = await collection.updateOne(
+      { mediaId: mediaId },
+      {
+        $set: {
+          messageLink: mediaLink,
+          mimeType: mimeType,
+        },
       }
-    });
-    if(result.modifiedCount > 0) {
+    );
+    if (result.modifiedCount > 0) {
       return {
         success: true,
         mediaId,
-        mediaLink
+        mediaLink,
       };
     }
     return {
       success: false,
       mediaId,
-      mediaLink
+      mediaLink,
     };
   } catch (err) {
     console.error('Error while creating voice callback:', err);
+    insertLog({
+      message: 'Error while creating voice callback:',
+      error: err,
+      type: 'tts',
+      data: JSON.stringify({ mediaId, mediaLink }),
+    });
   }
 }

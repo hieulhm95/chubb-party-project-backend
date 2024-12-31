@@ -5,8 +5,10 @@ import { getResponses } from './services/generate.services';
 const job = new CronJob(
 	'0 0 */1 * * *', // cronTime
 	async function () {
+		logger.info("Auto scan running");
 		await getResponses();
-	}, // onTick
+		logger.info("Auto scan done");
+	},
 	() => {
         logger.info("Auto scan done");
     }, // onComplete

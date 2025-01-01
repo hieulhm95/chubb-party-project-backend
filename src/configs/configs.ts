@@ -16,10 +16,14 @@ interface ConfigData {
   };
   DATABASE_URL: string;
   FPT_API_KEY: string;
+  MEDIA_DIR: string;
+  HOST: string;
 }
 
 const configData: ConfigData = {} as any;
 
+configData.HOST = process.env.HOST || "http://localhost:4000";
+configData.MEDIA_DIR = process.env.MEDIA_DIR || "media";
 configData.SHEET_ID = process.env.SHEET_ID || '';
 configData.REDIS_URI = process.env.REDIS_URI || '127.0.0.1:6379';
 configData.DATABASE_URL = process.env.DATABASE_URL as string;

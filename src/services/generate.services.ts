@@ -1,4 +1,4 @@
-import { MAPPING_RULES } from '../configs/configs';
+import { MAPPING_RULES, HOST } from '../configs/configs';
 import { FormResponse } from '../types/response';
 import {
   getAllRowsWithCells,
@@ -93,21 +93,6 @@ export async function getResponses() {
 
     await redis.set(sentHashkey, sentCount.toString());
 
-    // const existedResponse = await collection.findOne<Partial<FormResponse>>(
-    //   {
-    //     email: email,
-    //     receiverEmail: receiverEmail,
-    //   },
-    //   {
-    //     projection: {
-    //       _id: 1,
-    //       updatedCount: 1,
-    //       mediaId: 1,
-    //       filename: 1
-    //     },
-    //   }
-    // );
-
     response.mediaId = v4();
     response._id = new ObjectId();
     if (response.filename) {
@@ -131,69 +116,6 @@ export async function getResponses() {
     postOperations.push(
       generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName)
     );
-
-  //   if (!existedResponse) {
-  //     response.mediaId = v4();
-  //     response._id = new ObjectId();
-  //     if (response.filename) {
-  //       const url = new URL(response.filename);
-  //       const id = url.searchParams.get('id');
-  //       if (id) {
-  //         response.fileId = id;
-  //         const mimetype = await getFileMimeType(id);
-  //         response.mimeType = mimetype as string;
-  //       }
-  //     } else if (response.message) {
-  //       postOperations.push(
-  //         createVoice(response.message, response.mediaId as string, response.gender)
-  //       );
-  //     }
-  //     operations.push({
-  //       insertOne: {
-  //         document: response,
-  //       },
-  //     });
-  //     postOperations.push(
-  //       generateQRThenSendMail(response.mediaId, response.receiverEmail, response.receiverName)
-  //     );
-  //   } else {
-  //     const partialResponse = {} as Partial<FormResponse>;
-  //     if (existedResponse.updatedCount == 3) {
-  //       continue;
-  //     }
-  //     if (response.filename) {
-  //       partialResponse.filename = response.filename;
-  //       const url = new URL(response.filename);
-  //       const id = url.searchParams.get('id');
-  //       if (id) {
-  //         partialResponse.fileId = id;
-  //         const mimetype = await getFileMimeType(id);
-  //         partialResponse.mimeType = mimetype as string;
-  //       }
-  //     } else if (response.message && !existedResponse.filename) {
-  //       postOperations.push(
-  //         createVoice(response.message, existedResponse.mediaId as string, response.gender)
-  //       );
-  //     }
-  //     operations.push({
-  //       updateOne: {
-  //         filter: { _id: existedResponse._id },
-  //         update: {
-  //           $set: {
-  //             updatedCount: existedResponse.updatedCount ? existedResponse.updatedCount + 1 : 1,
-  //             ...partialResponse,
-  //           },
-  //         },
-  //       },
-  //     });
-  //     postOperations.push(
-  //       generateQRThenSendMail(
-  //         existedResponse.mediaId as string,
-  //         response.receiverEmail,
-  //         response.receiverName
-  //       )
-  //     );
-  //   }
   }
 
   const bulkWriteResponse =
@@ -261,7 +183,7 @@ export async function getResponse(mediaId: string) {
 
   // if(formResponse.filename)
   formResponse.mediaLink =
-    'https://gateway.chubbannualstaffparty2025.com/' + formResponse.mediaId + '.mp3';
+    HOST + "/" + formResponse.mediaId + '.mp3';
 
   return formResponse;
 }

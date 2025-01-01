@@ -9,9 +9,7 @@ const job = new CronJob(
 		await getResponses();
 		logger.info("Auto scan done");
 	},
-	() => {
-        logger.info("Auto scan done");
-    }, // onComplete
+	undefined,
 	false, // start
 	'Asia/Ho_Chi_Minh' // timeZone
 );

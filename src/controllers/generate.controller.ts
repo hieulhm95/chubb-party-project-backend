@@ -5,6 +5,8 @@ import fs from 'fs';
 import fsPromise from "fs/promises";
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import { logger } from '../utils/logger';
+import { MEDIA_DIR } from '../configs/configs';
+import path from 'path';
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -88,11 +90,13 @@ export async function getFileWithExtension(req: Request, res: Response) {
     res.status(404).send('Media not found');
   }
 
+  const mediaDir = path.join(process.cwd(), MEDIA_DIR);
+
   const mediaLinkSegment = mediaId.split('.');
   mediaLinkSegment.splice(1, mediaLinkSegment.length - 1);
 
   mediaId = mediaLinkSegment.join('.');
-  const destFile = mediaId + ".mp3";
+  const destFile = path.join(mediaDir, mediaId + ".mp3");
 
   
   try {
@@ -116,7 +120,7 @@ export async function getFileWithExtension(req: Request, res: Response) {
     const extension  = (MAPPING_FORMAT as any)[result.mimeType as string];
     if (!extension) return res.status(404).send("Meida not found");
     
-    const sourceFile = mediaId + "." + extension;
+    const sourceFile = path.join(mediaDir, mediaId + "." + extension);
     const mp3Writer = fs.createWriteStream(sourceFile);
     let isError = false;
     result.content.pipe(mp3Writer, { end: true });

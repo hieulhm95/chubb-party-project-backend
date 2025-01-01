@@ -11,16 +11,26 @@ import redisRouter from './routes/redis.routes';
 import generateRouter from './routes/generate.routes';
 import emailRouter from './routes/email.routes';
 import MongoDB from './utils/mongo';
-import { DATABASE_URL } from './configs/configs';
+import { DATABASE_URL, MEDIA_DIR } from './configs/configs';
 import { getFileWithExtension } from './controllers/generate.controller';
 import { scanner } from './task';
+import path from 'path';
+import fsPromise from "fs/promises";
 const cors = require('cors');
 
 const app: Express = express();
-const port = parseInt(process.env.PORT || "0") || 4000;
+const port = process.env.PORT || 4000;
 const hostname = process.env.HOST || '127.0.0.1';
-function bootstrap() {
+async function bootstrap() {
   new MongoDB(DATABASE_URL);
+  const mediaDir = path.join(process.cwd(), MEDIA_DIR);
+
+  try {
+    await fsPromise.stat(mediaDir);
+  }
+  catch(_){
+    await fsPromise.mkdir(mediaDir);
+  }
 }
 
 app.set("etag", false);

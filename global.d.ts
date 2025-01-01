@@ -1,5 +1,3 @@
-import Redis from "ioredis";
-
 namespace NodeJS {
     interface ProcessEnv {
         SHEET_ID?: string;
@@ -11,5 +9,7 @@ namespace NodeJS {
         HOST?: string;
         NODE_ENV?: string;
         LOG_LEVEL?: string;
+        MEDIA_DIR?: string;
+        HOST?: string;
     }
 }

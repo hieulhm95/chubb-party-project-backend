@@ -137,7 +137,13 @@ export async function getFileWithExtension(req: Request, res: Response) {
 
   if (result.mimeType == 'audio/mp3' || result.mimeType == 'audio/mpeg') {
     res.setHeader('Content-Type', "audio/mp3");
-    result.content.pipe(res);
+    let buffer: Buffer<ArrayBuffer>;
+    return result.content.on("data", chunk => {
+      if(!buffer) buffer = chunk as Buffer<ArrayBuffer>;
+      else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
+    }).once("end", async() => {
+      await redis.setBuffer(mediaId, buffer, "GET");
+    }).pipe(res);
   } else {
     const extension  = (MAPPING_FORMAT as any)[result.mimeType as string];
     if (!extension) return res.status(404).send("Meida not found");

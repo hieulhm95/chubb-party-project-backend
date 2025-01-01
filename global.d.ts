@@ -10,6 +10,6 @@ namespace NodeJS {
         NODE_ENV?: string;
         LOG_LEVEL?: string;
         MEDIA_DIR?: string;
-        HOST?: string;
+        BASE_URL?: string;
     }
 }

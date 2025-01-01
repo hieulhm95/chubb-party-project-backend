@@ -18,11 +18,12 @@ interface ConfigData {
   FPT_API_KEY: string;
   MEDIA_DIR: string;
   HOST: string;
+  BASE_URL: string;
 }
 
 const configData: ConfigData = {} as any;
 
-configData.HOST = process.env.HOST || "http://localhost:4000";
+configData.BASE_URL = process.env.BASE_URL || "http://localhost:4000";
 configData.MEDIA_DIR = process.env.MEDIA_DIR || "media";
 configData.SHEET_ID = process.env.SHEET_ID || '';
 configData.REDIS_URI = process.env.REDIS_URI || '127.0.0.1:6379';

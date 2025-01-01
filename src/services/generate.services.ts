@@ -1,4 +1,4 @@
-import { MAPPING_RULES, HOST } from '../configs/configs';
+import { HOST, MAPPING_RULES, PORT } from '../configs/configs';
 import { FormResponse } from '../types/response';
 import {
   getAllRowsWithCells,
@@ -11,8 +11,9 @@ import { InsertOneModel, UpdateOneModel, ObjectId } from 'mongodb';
 import MongoDB from '../utils/mongo';
 import { createVoice } from './tts.services';
 import https from 'https';
+import http from "http";
 import { Readable } from 'stream';
-import { BASE_URL } from '../utils/constant';
+import { API_ENDPOINT_URL, BASE_URL } from '../utils/constant';
 import * as qrCodeServices from '../services/qrcode.services';
 import * as emailServices from '../services/email.services';
 import { logger } from '../utils/logger';
@@ -135,6 +136,24 @@ export async function getResponses() {
   };
 }
 
+export async function prefetchMedia() {
+  const db = new MongoDB().getDatabase('localdb');
+
+  const collection = db.collection('Response');
+
+  const responses = await collection.find<FormResponse>({}, {"projection": {
+    "mediaId": 1
+  }}).toArray();
+
+  for (let i = 0; i < responses.length; i++) {
+    const formResponse = responses[i];
+    const mediaLink = "http://" + HOST + ":" + PORT + process.env.toString() + "/" + formResponse.mediaId + '.mp3';
+    try {
+      await http.get(mediaLink);
+    } catch(_) {}
+  }
+}
+
 export async function getFile(mediaId: string) {
   const db = new MongoDB().getDatabase('localdb');
 
@@ -183,7 +202,7 @@ export async function getResponse(mediaId: string) {
 
   // if(formResponse.filename)
   formResponse.mediaLink =
-    HOST + "/" + formResponse.mediaId + '.mp3';
+    API_ENDPOINT_URL + "/" + formResponse.mediaId + '.mp3';
 
   return formResponse;
 }

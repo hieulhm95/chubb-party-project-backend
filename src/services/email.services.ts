@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { insertLog } from './log.services';
+import { logger } from '../utils/logger';
 
 export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, name: string) {
   const transporter = nodemailer.createTransport({
@@ -525,7 +526,7 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: ' + info.response);
+    logger.info('Email sent: ' + info.response);
   } catch (error) {
     await insertLog({
       message: 'Error sending email',
@@ -533,6 +534,6 @@ export async function sendEmailWithBase64Image(to: string, qrCodeImage: string, 
       type: 'email',
       data: JSON.stringify({ to }),
     });
-    console.error('Error sending email: ', error);
+    logger.error('Error sending email: ', error);
   }
 }

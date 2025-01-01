@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import MongoDB from '../utils/mongo';
 
 interface Log {
@@ -19,7 +20,7 @@ export async function insertLog(logInfo: Log) {
       createdAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Error while inserting log:', error);
+    logger.error('Error while inserting log:', error);
     throw error;
   }
 }

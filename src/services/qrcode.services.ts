@@ -1,5 +1,6 @@
 import QRCode from 'qrcode';
 import { insertLog } from './log.services';
+import { logger } from '../utils/logger';
 // import fs from 'fs';
 
 export async function generateQRCode(text: string): Promise<string> {
@@ -7,7 +8,7 @@ export async function generateQRCode(text: string): Promise<string> {
     const url = await QRCode.toDataURL(text);
     return url;
   } catch (err) {
-    console.error('Error generating QR code', err);
+    logger.error('Error generating QR code', err);
     await insertLog({
       message: 'Error generating QR code',
       error: err,

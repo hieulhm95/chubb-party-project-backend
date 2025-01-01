@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as ttsServices from '../services/tts.services';
+import { logger } from '../utils/logger';
 
 export async function createVoice(req: Request, res: Response, next: NextFunction) {
   try {
@@ -10,7 +11,7 @@ export async function createVoice(req: Request, res: Response, next: NextFunctio
     const result = await ttsServices.createVoice(message, mediaId, gender);
     res.json(result);
   } catch (err) {
-    console.error(`Error while create voice`, (err as any).message);
+    logger.error(`Error while create voice`, (err as any).message);
     next(err);
   }
 }
@@ -22,11 +23,11 @@ export async function createVoiceCallback(req: Request, res: Response, next: Nex
     if (!mediaId || !success || success === 'false') {
       return res.status(400).json({ message: 'Error while get voice callback' });
     }
-    console.log('Debug Voice Callback', { success, mediaId, requestid, message });
+    logger.info('Debug Voice Callback', { success, mediaId, requestid, message });
     const result = ttsServices.createVoiceCallback(mediaId, message)
     res.json({ success, requestid, ...result });
   } catch (err) {
-    console.error(`Error while create voice callback`, (err as any).message);
+    logger.error(`Error while create voice callback`, (err as any).message);
     next(err);
   }
 }

@@ -58,7 +58,6 @@ export async function connectGoogleApis() {
     key: GOOGLE_AUTH.private_key,
     scopes: GOOGLE_AUTH.SCOPES,
   });
-  console.log(SHEET_ID);
   const doc = new GoogleSpreadsheet(SHEET_ID, jwt);
   await doc.loadInfo();
   return doc;

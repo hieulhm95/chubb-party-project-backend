@@ -38,7 +38,7 @@ export async function getResponses(req: Request, res: Response, next: NextFuncti
     const response = await generateServices.getResponses();
     return res.json(response);
   } catch (err) {
-    console.error(`Error while GET responses`, (err as any).message);
+    logger.error(`Error while GET responses`, (err as any).message);
     next(err);
   }
 }

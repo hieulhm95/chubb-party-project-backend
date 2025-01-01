@@ -8,8 +8,8 @@ let redis = new Redis(REDIS_URI, {
   connectTimeout: 10000, // Increase connection timeout to 10 seconds
 });
 
-redis.on('connect', () => console.log('[Redis] connected successfully'));
-redis.on('error', err => console.error('[Redis] connection error:', err));
+redis.on('connect', () => logger.info('[Redis] connected successfully'));
+redis.on('error', err => logger.error('[Redis] connection error:', err));
 
 export async function cachePostMiddleware(req: Request, res: Response, next: NextFunction) {
   const { email } = req.body;

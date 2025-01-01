@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as emailService from '../services/email.services';
 import * as qrCodeServices from '../services/qrcode.services';
 import { BASE_URL } from '../utils/constant';
+import { logger } from '../utils/logger';
 
 // Send email
 export async function sendEmail(req: Request, res: Response, next: NextFunction) {
@@ -18,7 +19,7 @@ export async function sendEmail(req: Request, res: Response, next: NextFunction)
     await emailService.sendEmailWithBase64Image(to, qrCode, to);
     res.json({ message: 'Email sent successfully' });
   } catch (err) {
-    console.error('Error while sending email', (err as any).message);
+    logger.error('Error while sending email', (err as any).message);
     next(err);
   }
 }
@@ -36,7 +37,7 @@ export async function createQRCode(req: Request, res: Response, next: NextFuncti
     }
     res.json({ qrCodeUrl });
   } catch (err) {
-    console.error('Error while creating QR code', (err as any).message);
+    logger.error('Error while creating QR code', (err as any).message);
     next(err);
   }
 }

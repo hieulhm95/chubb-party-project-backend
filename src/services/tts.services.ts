@@ -3,6 +3,7 @@ import { API_ENDPOINT_URL } from '../utils/constant';
 import mime from 'mime-types';
 import MongoDB from '../utils/mongo';
 import { insertLog } from './log.services';
+import { logger } from '../utils/logger';
 
 export async function createVoice(message: string, mediaId: string, gender: string) {
   try {
@@ -34,7 +35,7 @@ export async function createVoice(message: string, mediaId: string, gender: stri
       type: 'tts',
       data: JSON.stringify({ message, mediaId, gender }),
     });
-    console.error('Error while creating voice:', err);
+    logger.error('Error while creating voice:', err);
   }
 }
 
@@ -67,7 +68,7 @@ export async function createVoiceCallback(mediaId: string, mediaLink: string) {
       mediaLink,
     };
   } catch (err) {
-    console.error('Error while creating voice callback:', err);
+    logger.error('Error while creating voice callback:', err);
     await insertLog({
       message: 'Error while creating voice callback:',
       error: err,

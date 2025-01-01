@@ -7,6 +7,8 @@ import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import { logger } from '../utils/logger';
 import { MEDIA_DIR } from '../configs/configs';
 import path from 'path';
+import { redis } from '../utils/utils';
+import { PassThrough } from "stream";
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -98,12 +100,32 @@ export async function getFileWithExtension(req: Request, res: Response) {
   mediaId = mediaLinkSegment.join('.');
   const destFile = path.join(mediaDir, mediaId + ".mp3");
 
+  const cachedMediaExists = (await redis.exists(mediaId)) > 0 
   
+  if(cachedMediaExists) {
+    const mediaBuffer = await redis.getBuffer(mediaId);
+    if(mediaBuffer) {
+      res.setHeader("Content-Type", "audio/mp3");
+
+      const bufferStream = new PassThrough();
+  
+      bufferStream.end(mediaBuffer)
+  
+      return bufferStream.pipe(res);
+    }
+  }
+
   try {
     const destFileInfo = await fsPromise.stat(destFile);
     if(destFileInfo.isFile()) {
       res.setHeader('Content-Type', "audio/mp3");
-      return fs.createReadStream(destFile).pipe(res);
+      let buffer: Buffer<ArrayBuffer>;
+      return fs.createReadStream(destFile).on("data", chunk => {
+        if(!buffer) buffer = chunk as Buffer<ArrayBuffer>;
+        else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>])
+      }).once("end", async () => {
+        await redis.setBuffer(mediaId, buffer, "GET");
+      }).pipe(res);
     }
   }
   catch(_) {}
@@ -138,8 +160,14 @@ export async function getFileWithExtension(req: Request, res: Response) {
               fs.unlink(sourceFile, (_) => {});
             }
           });
+          let buffer: Buffer<ArrayBuffer>;
           res.setHeader('Content-Type', "audio/mp3");
-          fs.createReadStream(destFile).pipe(res);
+          fs.createReadStream(destFile).on("data", chunk => {
+            if(!buffer) buffer = chunk as Buffer<ArrayBuffer>;
+            else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
+          }).once("end", async() => {
+            await redis.setBuffer(mediaId, buffer, "GET");
+          }).pipe(res);
         })
         .once("error", (err) => {
           if(!isError) {

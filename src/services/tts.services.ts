@@ -11,7 +11,7 @@ export async function createVoice(message: string, mediaId: string, gender: stri
       method: 'POST',
       headers: {
         'api-key': FPT_API_KEY,
-        voice: gender === 'Anh' ? 'minhquang' : 'linhsan',
+        voice: gender === 'Anh' ? 'minhquangace' : 'linhsanace',
         'Cache-Control': 'no-cache',
         callback_url: `${API_ENDPOINT_URL}/tts/callback?mediaId=${mediaId}`,
       },

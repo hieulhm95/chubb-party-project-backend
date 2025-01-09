@@ -2,13 +2,13 @@ import { NextFunction, Request, Response } from 'express';
 import * as generateServices from '../services/generate.services';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
-import fsPromise from "fs/promises";
+import fsPromise from 'fs/promises';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import { logger } from '../utils/logger';
 import { MEDIA_DIR } from '../configs/configs';
 import path from 'path';
 import { redis } from '../utils/utils';
-import { PassThrough } from "stream";
+import { PassThrough } from 'stream';
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -98,37 +98,40 @@ export async function getFileWithExtension(req: Request, res: Response) {
   mediaLinkSegment.splice(1, mediaLinkSegment.length - 1);
 
   mediaId = mediaLinkSegment.join('.');
-  const destFile = path.join(mediaDir, mediaId + ".mp3");
+  const destFile = path.join(mediaDir, mediaId + '.mp3');
 
-  const cachedMediaExists = (await redis.exists(mediaId)) > 0 
-  
-  if(cachedMediaExists) {
+  const cachedMediaExists = (await redis.exists(mediaId)) > 0;
+
+  if (cachedMediaExists) {
     const mediaBuffer = await redis.getBuffer(mediaId);
-    if(mediaBuffer) {
-      res.setHeader("Content-Type", "audio/mp3");
+    if (mediaBuffer) {
+      res.setHeader('Content-Type', 'audio/mp3');
 
       const bufferStream = new PassThrough();
-  
-      bufferStream.end(mediaBuffer)
-  
+
+      bufferStream.end(mediaBuffer);
+
       return bufferStream.pipe(res);
     }
   }
 
   try {
     const destFileInfo = await fsPromise.stat(destFile);
-    if(destFileInfo.isFile()) {
-      res.setHeader('Content-Type', "audio/mp3");
+    if (destFileInfo.isFile()) {
+      res.setHeader('Content-Type', 'audio/mp3');
       let buffer: Buffer<ArrayBuffer>;
-      return fs.createReadStream(destFile).on("data", chunk => {
-        if(!buffer) buffer = chunk as Buffer<ArrayBuffer>;
-        else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>])
-      }).once("end", async () => {
-        await redis.setBuffer(mediaId, buffer, "GET");
-      }).pipe(res);
+      return fs
+        .createReadStream(destFile)
+        .on('data', chunk => {
+          if (!buffer) buffer = chunk as Buffer<ArrayBuffer>;
+          else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
+        })
+        .once('end', async () => {
+          await redis.setBuffer(mediaId, buffer, 'GET');
+        })
+        .pipe(res);
     }
-  }
-  catch(_) {}
+  } catch (_) {}
 
   const result = await generateServices.getFile(mediaId);
   if (result == null) {
@@ -136,59 +139,77 @@ export async function getFileWithExtension(req: Request, res: Response) {
   }
 
   if (result.mimeType == 'audio/mp3' || result.mimeType == 'audio/mpeg') {
-    res.setHeader('Content-Type', "audio/mp3");
+    res.setHeader('Content-Type', 'audio/mp3');
     let buffer: Buffer<ArrayBuffer>;
-    return result.content.on("data", chunk => {
-      if(!buffer) buffer = chunk as Buffer<ArrayBuffer>;
-      else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
-    }).once("end", async() => {
-      await redis.setBuffer(mediaId, buffer, "GET");
-    }).pipe(res);
+    return result.content
+      .on('data', chunk => {
+        if (!buffer) buffer = chunk as Buffer<ArrayBuffer>;
+        else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
+      })
+      .once('end', async () => {
+        await redis.setBuffer(mediaId, buffer, 'GET');
+      })
+      .pipe(res);
   } else {
-    const extension  = (MAPPING_FORMAT as any)[result.mimeType as string];
-    if (!extension) return res.status(404).send("Meida not found");
-    
-    const sourceFile = path.join(mediaDir, mediaId + "." + extension);
+    const extension = (MAPPING_FORMAT as any)[result.mimeType as string];
+    if (!extension) return res.status(404).send('Meida not found');
+
+    const sourceFile = path.join(mediaDir, mediaId + '.' + extension);
     const mp3Writer = fs.createWriteStream(sourceFile);
     let isError = false;
     result.content.pipe(mp3Writer, { end: true });
-    result.content.once('close', () => {
-      mp3Writer.end();
-      mp3Writer.close();
-      if(!isError) {
-        ffmpeg(sourceFile)
-        .toFormat('mp3')
-        .audioCodec('libmp3lame')
-        .save(destFile)
-        .once('end', () => {
-          fs.stat(sourceFile, (err) => {
-            if(!err) {
-              fs.unlink(sourceFile, (_) => {});
-            }
-          });
-          let buffer: Buffer<ArrayBuffer>;
-          res.setHeader('Content-Type', "audio/mp3");
-          fs.createReadStream(destFile).on("data", chunk => {
-            if(!buffer) buffer = chunk as Buffer<ArrayBuffer>;
-            else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
-          }).once("end", async() => {
-            await redis.setBuffer(mediaId, buffer, "GET");
-          }).pipe(res);
-        })
-        .once("error", (err) => {
-          if(!isError) {
-            isError = true;
-            logger.error(err);
-            res.status(404).send("Media not found");
-          }
-        });
-      }
-    }).once("error", (err) => {
-      if(!isError) {
-        isError = true;
-        logger.error(err);
-        res.status(404).send("Media not found");
-      }
-    })
+    result.content
+      .once('close', () => {
+        mp3Writer.end();
+        mp3Writer.close();
+        if (!isError) {
+          ffmpeg(sourceFile)
+            .toFormat('mp3')
+            .audioCodec('libmp3lame')
+            .save(destFile)
+            .once('end', () => {
+              fs.stat(sourceFile, err => {
+                if (!err) {
+                  fs.unlink(sourceFile, _ => {});
+                }
+              });
+              let buffer: Buffer<ArrayBuffer>;
+              res.setHeader('Content-Type', 'audio/mp3');
+              fs.createReadStream(destFile)
+                .on('data', chunk => {
+                  if (!buffer) buffer = chunk as Buffer<ArrayBuffer>;
+                  else buffer = Buffer.concat([buffer, chunk as Buffer<ArrayBuffer>]);
+                })
+                .once('end', async () => {
+                  await redis.setBuffer(mediaId, buffer, 'GET');
+                })
+                .pipe(res);
+            })
+            .once('error', err => {
+              if (!isError) {
+                isError = true;
+                logger.error(err);
+                res.status(404).send('Media not found');
+              }
+            });
+        }
+      })
+      .once('error', err => {
+        if (!isError) {
+          isError = true;
+          logger.error(err);
+          res.status(404).send('Media not found');
+        }
+      });
+  }
+}
+
+export async function getReport(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await generateServices.generateReportToCsv();
+    return res.json(result);
+  } catch (err) {
+    logger.error(`Error while GET report`, (err as any).message);
+    next(err);
   }
 }

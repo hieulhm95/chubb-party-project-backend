@@ -13,9 +13,9 @@ import emailRouter from './routes/email.routes';
 import MongoDB from './utils/mongo';
 import { DATABASE_URL, MEDIA_DIR } from './configs/configs';
 import { getFileWithExtension } from './controllers/generate.controller';
-import { scanner } from './task';
+// import { scanner } from './task';
 import path from 'path';
-import fsPromise from "fs/promises";
+import fsPromise from 'fs/promises';
 const cors = require('cors');
 
 const app: Express = express();
@@ -27,13 +27,12 @@ async function bootstrap() {
 
   try {
     await fsPromise.stat(mediaDir);
-  }
-  catch(_){
+  } catch (_) {
     await fsPromise.mkdir(mediaDir);
   }
 }
 
-app.set("etag", false);
+app.set('etag', false);
 
 // Use Pino HTTP middleware
 app.use(pinoHttp({ logger }));
@@ -56,10 +55,10 @@ app.use('/tts', ttsRouter);
 app.use('/redis', redisRouter);
 app.use('/generate', generateRouter);
 app.use('/email', emailRouter);
-app.get("/:mediaId", getFileWithExtension);
+app.get('/:mediaId', getFileWithExtension);
 
 app.listen(port, hostname, async () => {
   bootstrap();
-  await scanner();
+  // await scanner();
   logger.info(`[Server]: Server is running at http://${hostname}:${port}`);
 });

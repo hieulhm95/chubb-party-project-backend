@@ -24,10 +24,24 @@ export async function createVoiceCallback(req: Request, res: Response, next: Nex
       return res.status(400).json({ message: 'Error while get voice callback' });
     }
     logger.info('Debug Voice Callback', { success, mediaId, requestid, message });
-    const result = ttsServices.createVoiceCallback(mediaId, message)
+    const result = ttsServices.createVoiceCallback(mediaId, message);
     res.json({ success, requestid, ...result });
   } catch (err) {
     logger.error(`Error while create voice callback`, (err as any).message);
+    next(err);
+  }
+}
+
+export async function createVoiceByEmail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { emails } = req.body;
+    if (!emails) {
+      return res.status(400).json({ message: 'Emails is required' });
+    }
+    const result = await ttsServices.createVoices(emails);
+    res.json(result);
+  } catch (err) {
+    logger.error(`Error while create voice by email`, (err as any).message);
     next(err);
   }
 }

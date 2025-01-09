@@ -34,14 +34,14 @@ export async function createVoiceCallback(req: Request, res: Response, next: Nex
 
 export async function createVoiceByEmail(req: Request, res: Response, next: NextFunction) {
   try {
-    const { emails } = req.body;
-    if (!emails) {
-      return res.status(400).json({ message: 'Emails is required' });
+    const { mediaIds } = req.body;
+    if (!mediaIds) {
+      return res.status(400).json({ message: 'MediaIds is required' });
     }
-    const result = await ttsServices.createVoices(emails);
+    const result = await ttsServices.createVoicesByMediaIds(mediaIds);
     res.json(result);
   } catch (err) {
-    logger.error(`Error while create voice by email`, (err as any).message);
+    logger.error(`Error while create voices by mediaIds`, (err as any).message);
     next(err);
   }
 }

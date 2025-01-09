@@ -79,34 +79,34 @@ export async function createVoiceCallback(mediaId: string, mediaLink: string) {
   }
 }
 
-async function findDataByEmail(email: string) {
+async function findDataByMediaId(mediaId: string) {
   try {
     const db = new MongoDB().getDatabase('localdb');
     const collection = db.collection('Response');
-    const result = await collection.findOne<FormResponse>({ receiverEmail: email });
+    const result = await collection.findOne<FormResponse>({ mediaId: mediaId });
     return result;
   } catch (err) {
-    logger.error('Error while finding data by email:', err);
+    logger.error('Error while finding data by mediaId:', err);
     await insertLog({
-      message: 'Error while finding data by email:',
+      message: 'Error while finding data by mediaId:',
       error: err,
       type: 'tts',
-      data: JSON.stringify({ email }),
+      data: JSON.stringify({ mediaId }),
     });
     return null;
   }
 }
 
-export async function createVoices(emails: string[]) {
+export async function createVoicesByMediaIds(mediaIds: string[]) {
   const success = [];
-  for (const email of emails) {
-    const data = await findDataByEmail(email);
+  for (const mediaId of mediaIds) {
+    const data = await findDataByMediaId(mediaId);
     if (data == null) {
       continue;
     }
     await createVoice(data.message, data.mediaId, data.gender);
-    await new Promise(resolve => setTimeout(resolve, 3000)); // Throttle by 3 second
-    success.push(email);
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Throttle by 2 second
+    success.push(mediaId);
   }
   return { message: 'Success', success };
 }

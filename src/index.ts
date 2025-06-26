@@ -57,7 +57,7 @@ app.use('/generate', generateRouter);
 app.use('/email', emailRouter);
 app.get('/:mediaId', getFileWithExtension);
 
-app.listen(port, hostname, async () => {
+app.listen(port, async () => {
   bootstrap();
   // await scanner();
   logger.info(`[Server]: Server is running at http://${hostname}:${port}`);

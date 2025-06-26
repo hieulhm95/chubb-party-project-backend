@@ -42,7 +42,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/user', userRouter);
 
-server.listen(port, hostname, async () => {
+server.listen(port, async () => {
   bootstrap();
   // Initialize WebSocket
   initWebSocket(server);

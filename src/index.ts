@@ -40,7 +40,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
 
-app.use('/user', userRouter);
+app.use('/api/user', userRouter);
 
 server.listen(port, async () => {
   bootstrap();

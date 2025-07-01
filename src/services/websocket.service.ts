@@ -6,10 +6,17 @@ let io: SocketIOServer | null = null;
 
 export function initWebSocket(server: HTTPServer): SocketIOServer {
   io = new SocketIOServer(server, {
+    path: '/api/socket.io',
     cors: {
-      origin: '*', // Configure this based on your frontend domain
+      origin: [
+        'https://boehringer-ingelheim-empa-10years.com',
+        'http://localhost:3000',
+        'http://localhost:5173',
+      ],
       methods: ['GET', 'POST'],
+      credentials: true,
     },
+    transports: ['websocket', 'polling'],
   });
 
   io.on('connection', (socket: Socket) => {

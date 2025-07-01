@@ -14,7 +14,7 @@ const cors = require('cors');
 const app: Express = express();
 const server = createServer(app);
 const port = process.env.PORT || 4000;
-const hostname = process.env.HOST || '127.0.0.1';
+const hostname = process.env.HOST || '0.0.0.0'; // Changed to bind to all interfaces for production
 async function bootstrap() {
   const mediaDir = path.join(process.cwd(), MEDIA_DIR);
   try {
